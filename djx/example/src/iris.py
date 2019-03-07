@@ -36,15 +36,15 @@ def cross_val_model(X, y, model_args, cross_val_args):
 
 
 def fit_and_save(X, y, model_args):
-    model_uuid = uuid.uuid4().hex
+    local_model_path = os.path.join(DATA_FOLDER, uuid.uuid4().hex)
     clf = SGDClassifier(**model_args)
     clf.fit(X, y)
-    clf.save(os.path.join(DATA_FOLDER, model_uuid))
-    return model_uuid
+    clf.save(local_model_path)
+    return local_model_path
 
 
-def cv_fit_save(dataset, *, model_args, dataset_args, cross_val_args):
-    X, y = load_dataset(dataset, **dataset_args)
+def cv_fit_save(data, *, model_args, dataset_args, cross_val_args):
+    X, y = load_dataset(data['dataset'], **dataset_args)
     scores = cross_val_model(X, y, model_args, cross_val_args)
-    model_uuid = fit_and_save(X, y, model_args)
-    return {'model': model_uuid, 'scores': scores}
+    local_model_path = fit_and_save(X, y, model_args)
+    return {'model': local_model_path}, scores

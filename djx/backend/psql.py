@@ -44,10 +44,7 @@ def insert_plan(plan):
 
 
 def insert_tasks(tasks):
-    columns = [
-        'plan_id', 'task', 'worker', 'status', 'date_created',
-        'date_started', 'date_finished', 'output_records', 'output_files'
-    ]
+    columns = ['plan_id', 'task', 'labels']
     data = [
         [task.get(col) for col in columns]
         for task in tasks

@@ -1,6 +1,8 @@
 WITH ot as (
-    SELECT *
-    FROM {schema}.tasks
+    SELECT plan_id, task_id, "entry", project, task, labels
+    FROM {schema}.tasks t
+    JOIN {schema}.plans p
+    ON t.plan_id = p.plan_id
     WHERE plan_id = %(plan_id)s
     AND "status" = 'UNASSIGNED'
     LIMIT 1

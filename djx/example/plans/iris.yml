@@ -1,14 +1,10 @@
-
 project: djx example
-attributes:
-    itteration: 1
 source:
-    project: CURRENT_ENTRY #git+git://github.com/LBrinkmann/djx.git
-    commit: CURRENT_ENTRY
+    FROM_CURRENT_ENTRY
+entry: djx.example.src.iris.cv_fit_save
 task:
-    entry: djx.example.src.iris.cv_fit_save
-    result:
-        prefix: /data/djx/
+    labels:
+        itteration: 1
     data:
         dataset: https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/d546eaee765268bf2f487608c537c05e22e4b221/iris.csv
     parameter:
@@ -25,7 +21,5 @@ task:
             feature_columns: [sepal_length,sepal_width,petal_length,petal_width]
 plan:
     grid:
-        - linreg_l1_ratio:
-            parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]
-        - linreg_alpha:
-            parameter.alpha: [0, 0.5, 1]
+        - parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]
+        - parameter.model_args.alpha: [0, 0.5, 1]

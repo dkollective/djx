@@ -8,17 +8,17 @@ setup(
         'pyyaml==3.13',
         'toolz==0.9.0',
         'pandas==0.23.3',
-        'docopt==0.6.2'
+        'docopt==0.6.2',
+        'structlog==19.1.0'
     ],
-
     extras_require={
         'dev': ['ipdb',
                 'jupyter',
                 'jupyter-client',
                 'jupyter-console',
-                'ipython']
+                'ipython',
+                'sklearn']
     },
-
     scripts=[
         'scripts/djx'
     ]

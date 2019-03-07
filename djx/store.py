@@ -1,4 +1,4 @@
-import md5
+from hashlib import md5
 import os
 from urllib.request import urlretrieve
 from shutil import copyfile
@@ -9,7 +9,7 @@ DATA_STORE = os.environ['DJX_DATA_STORE']
 
 
 def create_temp_path(remote):
-    file_id = md5.hex(remote).hexdigest()
+    file_id = md5(remote).hexdigest()
     return os.path.join(DATA_TEMP, file_id)
 
 

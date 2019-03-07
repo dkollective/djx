@@ -23,5 +23,6 @@ Options:
         plan_id = add_plan(args['<batch-file>'])
         run_next(plan_id)
 
+
 if __name__ == "__main__":
     main()

@@ -13,11 +13,6 @@ def deepmerge(base, new):
         return new
 
 
-def assert_same_length(grid_dim):
-    list_len = [len(l) for l in _list]
-    assert min(list_len) == max(list_len), 'Different lengths in same dim.'
-
-
 def parse_simple(tasks, **grid_dim):
     _tasks = []
     keys, values = list(grid_dim.items())[0]
@@ -32,8 +27,8 @@ def parse_simple(tasks, **grid_dim):
 def get_dim_length(merge, replace, labels):
     lists = [list(merge.values()) + list(replace.values()) + labels]
     lens = [len(l) for l in lists]
-    assert min(list_len) == max(list_len), 'Different lengths in same dim.'
-    return min(list_len)
+    assert min(lens) == max(lens), 'Different lengths in same dim.'
+    return min(lens)
 
 
 def parse_advanced(tasks, *, labels, name, merge={}, replace={}):

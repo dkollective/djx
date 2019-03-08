@@ -19,19 +19,19 @@ def parse_simple(tasks, **grid_dim):
     for task in tasks:
         for v in values:
             _task = assoc_in(task, ['labels', keys], v)
-            _task = assoc_in(task, keys.split('.'), v)
+            _task = assoc_in(_task, keys.split('.'), v)
             _tasks.append(_task)
-    return tasks
+    return _tasks
 
 
 def get_dim_length(merge, replace, labels):
     lists = [list(merge.values()) + list(replace.values()) + labels]
     lens = [len(l) for l in lists]
-    assert min(lens) == max(lens), 'Different lengths in same dim.'
+    assert min(lens) == max(lens), 'Different lengths in same dimension.'
     return min(lens)
 
 
-def parse_advanced(tasks, *, labels, name, merge={}, replace={}):
+def parse_advanced(tasks,  *, labels, name, merge={}, replace={}):
     _tasks = []
     for task in tasks:
         dim_length = get_dim_length(merge, replace, labels)
@@ -39,9 +39,9 @@ def parse_advanced(tasks, *, labels, name, merge={}, replace={}):
             _task = assoc_in(task, ['labels', name], labels[i])
             for keys, values in merge.items():
                 k_list = keys.split('.')
-                old_v = get_in(keys, task)
+                old_v = get_in(k_list, task)
                 new_v = deepmerge(values[i], old_v)
-                _task = assoc_in(task, keys, new_v)
+                _task = assoc_in(task, k_list, new_v)
             for keys, values in replace.items():
                 _task = assoc_in(task, keys.split('.'), values[i])
             _tasks.append(_task)
@@ -56,7 +56,7 @@ def parse_dim(tasks, grid_dim):
 
 
 def parse_grid(grid, base_task):
-    tasks = [[{'labels': {}, **base_task}]]
+    tasks = [{'labels': {}, **base_task}]
     for grid_dim in grid:
         tasks = parse_dim(tasks, grid_dim)
     return tasks

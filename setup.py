@@ -9,7 +9,9 @@ setup(
         'toolz==0.9.0',
         'pandas==0.23.3',
         'docopt==0.6.2',
-        'structlog==19.1.0'
+        'structlog==19.1.0',
+        'google-cloud-storage==1.14.0',
+        'psycopg2-binary==2.7.7'
     ],
     extras_require={
         'dev': ['ipdb',
@@ -17,7 +19,9 @@ setup(
                 'jupyter-client',
                 'jupyter-console',
                 'ipython',
-                'sklearn']
+                'sklearn',
+                'pylint',
+                'flake8']
     },
     scripts=[
         'scripts/djx'

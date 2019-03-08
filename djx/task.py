@@ -1,5 +1,5 @@
 import structlog
-from backend import psql as backend
+from djx.backend import psql as backend
 from djx.utils import get_method
 from djx.store import get_all_data, store_data
 
@@ -13,11 +13,11 @@ def run_task(*, plan_id, task_id, entry, project, task, labels):
         labels=labels,
         project=project)
     log.info('get data')
-    data = get_all_data(task['data'])
+    data_local, data_stored = get_all_data(task['data'])
     func = get_method(entry)
 
     log.info('run task')
-    output_files, output_records = func(data, **task['parameter'])
+    output_files, output_records = func(data_local, **task['parameter'])
 
     log.info('store data')
     output_files = store_data(output_files)
@@ -25,6 +25,7 @@ def run_task(*, plan_id, task_id, entry, project, task, labels):
         'task_id': task_id,
         'output_files': output_files,
         'output_records': output_records,
+        'data_stored': data_stored,
         'status': 'FINISHED'
     }
 

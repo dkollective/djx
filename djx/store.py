@@ -93,11 +93,17 @@ def get_data(source):
         copy_file(found_remote, local_path)
     elif found_temp and not found_remote:
         copy_file(found_temp, found_remote)
-    return local_path
+    return local_path, remote_path
 
 
 def get_all_data(data):
-    return [get_data(remote) for remote in data]
+    local = {}
+    remote = {}
+    for k, v in data:
+        local_path, remote_path = get_data(v)
+        local[k] = local_path
+        remote[k] = remote_path
+    return local, remote
 
 
 def store_data(data):

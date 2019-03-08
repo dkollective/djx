@@ -1,6 +1,6 @@
 from djx.utils import get_git_info, load_yaml
-from backend import psql as backend
-from grid import parse_grid
+from djx.backend import psql as backend
+from djx.grid import parse_grid
 
 
 def preprocess_plan(plan):
@@ -14,11 +14,14 @@ def add_plan(plan_file):
     plan = load_yaml(plan_file)
     plan = preprocess_plan(plan)
     plan_id = backend.insert_plan(plan)
-    if 'grid' in plan:
-        tasks = parse_grid(plan['task'], plan['grid'])
+    if 'plan' in plan:
+        if 'grid' in plan['plan']:
+            tasks = parse_grid(plan['plan']['grid'], plan['task'])
+        else:
+            raise NotImplementedError('Currently only grid plan implemented.')
     else:
         tasks = [plan['task']]
-    tasks = [{'task': t, 'plain_id': plan_id} for t in tasks]
+    tasks = [{**t, 'plan_id': plan_id} for t in tasks]
     backend.insert_tasks(tasks)
     print(f'Added plan {plan_id}')
     return plan_id

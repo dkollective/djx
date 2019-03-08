@@ -1,4 +1,5 @@
-project: djx example
+project: fit a linear model to the iris dataset
+name: try different regularisations
 source:
     FROM_CURRENT_ENTRY
 entry: djx.example.src.iris.cv_fit_save

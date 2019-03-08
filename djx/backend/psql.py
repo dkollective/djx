@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import psycopg2.extras
+from psycopg2.extras import Json
 from pkg_resources import resource_filename
 
 
@@ -13,6 +14,17 @@ db_info = {
 }
 
 SCHEMA = os.environ['DJX_PG_SCHEMA']
+
+
+def to_json(d):
+    if isinstance(d, (dict, list)):
+        return Json(d)
+    else:
+        return d
+
+
+def dict_to_json(d):
+    return {k: to_json(v) for k, v in d.items()}
 
 
 def get_connection():
@@ -38,21 +50,24 @@ def insert_plan(plan):
     query = load_query('insert_plan.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query, plan)
+        cursor.execute(query, dict_to_json(plan))
         inserted = cursor.fetchall()
-    return plan['plan_id']
+    print(inserted)
+    return inserted[0]['plan_id']
 
 
 def insert_tasks(tasks):
-    columns = ['plan_id', 'task', 'labels']
+    print(tasks)
+    columns = ['plan_id', 'parameter', 'data', 'labels']
     data = [
-        [task.get(col) for col in columns]
+        [to_json(task.get(col)) for col in columns]
         for task in tasks
     ]
     query = load_query('insert_tasks.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query, data)
+        psycopg2.extras.execute_values(
+            cursor, query, data, template=None, page_size=10)
         records = cursor.fetchall()
     return [r['task_id'] for r in records]
 
@@ -70,4 +85,6 @@ def update_task(task):
     query = load_query('update_task.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query, task)
+        cursor.execute(query, dict_to_json(task))
+
+setup_ddl()

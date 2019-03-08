@@ -31,5 +31,6 @@ def get_git_info(entry):
     commit = subprocess.check_output(
         ['git rev-parse HEAD'], shell=True, cwd=folder).decode()
     repo = subprocess.check_output(
-        ['git config --get remote.origin.url'], shell=True, cwd=folder).decode()
+        ['git config --get remote.origin.url'], shell=True, cwd=folder) \
+        .decode()[:-1]
     return repo, commit

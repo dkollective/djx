@@ -6,7 +6,7 @@ from structlog import get_logger
 from sklearn.model_selection import StratifiedKFold
 from sklearn.linear_model import SGDClassifier
 
-DATA_FOLDER = os.environ['DJX_DATA']
+DATA_FOLDER = 'data'
 log = get_logger()
 
 

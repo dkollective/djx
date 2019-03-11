@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS {schema}.task (
     parameter jsonb NULL,
     "data" jsonb NULL,
     worker text NULL,
-    "status" text NULL,
+    "status" text DEFAULT 'UNASSIGNED',
     date_created timestamp DEFAULT NOW(),
     date_started timestamp NULL,
     date_finished timestamp NULL,

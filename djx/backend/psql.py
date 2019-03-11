@@ -72,19 +72,20 @@ def insert_tasks(tasks):
     return [r['task_id'] for r in records]
 
 
-def get_next_task(batch_id):
+def get_next_task(plan_id, worker):
     query = load_query('get_task.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query, {'batch_id': batch_id})
+        cursor.execute(query, {'plan_id': plan_id, 'worker': worker})
         records = cursor.fetchall()
-    return records[0]
+    if records:
+        return records[0]
 
 
-def update_task(task):
+def update_task(result):
     query = load_query('update_task.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query, dict_to_json(task))
+        cursor.execute(query, dict_to_json(result))
 
 setup_ddl()

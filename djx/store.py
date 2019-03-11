@@ -1,9 +1,12 @@
 from hashlib import md5
 import os
 import re
+from structlog import get_logger
 from urllib.request import urlretrieve
 from shutil import copyfile
 from google.cloud import storage
+
+log = get_logger()
 
 
 DATA_TEMP = os.environ['DJX_DATA_TEMP']
@@ -36,26 +39,25 @@ def gs_check(filename):
 
 
 def create_paths(source):
-    file_id = md5(source).hexdigest()
+    file_id = md5(source.encode()).hexdigest()
     return os.path.join(DATA_TEMP, file_id), os.path.join(DATA_STORE, file_id)
 
 
-def create_store_path(source):
-    file_id = md5(source).hexdigest()
-    return os.path.join(DATA_STORE, file_id)
-
-
 def copy_file(source, destination):
-    if source[0:5] == 'http' and destination[0] == '/':
+    if source[0:4] == 'http' and destination[0] == '/':
+        log.info(f'Load from url: {source}')
         urlretrieve(source, destination)
-    elif source[0] == '/' and destination[0] == '/':
+    elif os.path.isfile(source) and destination[0] == '/':
+        log.info(f'Copy from folder: {source}')
         copyfile(source, destination)
-    elif source[0] == '/' and destination[0:2] == 'gs':
+    elif os.path.isfile(source) and destination[0:2] == 'gs':
+        log.info(f'Copy from folder to gs: {source}')
         gs_upload(source, destination)
     elif source[0:2] == 'gs' and destination[0] == '/':
+        log.info(f'Copy from gs to folder: {source}')
         gs_download(source, destination)
     else:
-        ValueError(
+        raise ValueError(
             f'Unkown source {source} and destination {destination} combination.')
 
 
@@ -99,7 +101,7 @@ def get_data(source):
 def get_all_data(data):
     local = {}
     remote = {}
-    for k, v in data:
+    for k, v in data.items():
         local_path, remote_path = get_data(v)
         local[k] = local_path
         remote[k] = remote_path
@@ -110,7 +112,11 @@ def store_data(data):
     remote_paths = {}
     for name, temp_path in data.items():
         _, extension = os.path.splitext(temp_path)
-        remote_path = os.path.join(DATA_STORE, name + "." + extension)
+        if extension:
+            filename = name + "." + extension
+        else:
+            filename = name
+        remote_path = os.path.join(DATA_STORE, filename)
         copy_file(temp_path, remote_path)
         remote_paths[name] = remote_path
     return remote_paths

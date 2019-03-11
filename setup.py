@@ -11,7 +11,8 @@ setup(
         'docopt==0.6.2',
         'structlog==19.1.0',
         'google-cloud-storage==1.14.0',
-        'psycopg2-binary==2.7.7'
+        'psycopg2-binary==2.7.7',
+        'joblib==0.13.2'
     ],
     extras_require={
         'dev': ['ipdb',

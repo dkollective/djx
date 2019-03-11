@@ -3,6 +3,7 @@ import yaml
 import subprocess
 import sys
 import os
+import socket
 
 
 def get_method(name):
@@ -34,3 +35,7 @@ def get_git_info(entry):
         ['git config --get remote.origin.url'], shell=True, cwd=folder) \
         .decode()[:-1]
     return repo, commit
+
+
+def get_worker_info():
+    return socket.gethostname()

@@ -4,9 +4,17 @@ from djx.grid import parse_grid
 
 
 def preprocess_plan(plan):
-    if plan['source'] == 'FROM_CURRENT_ENTRY':
-        repository, commit = get_git_info(plan['entry'])
-        plan = {**plan, 'source': {'repository': repository, 'commit': commit}}
+    if plan['source']['source_type'] == 'PYTHON_MODULE_FROM_ENTRY':
+        repository, commit = get_git_info(plan['source']['entry'])
+        plan = {
+            **plan,
+            'source': {
+                **plan['source'],
+                'source_type': 'PYTHON_MODULE',
+                'repository': repository,
+                'commit': commit
+            }
+        }
     return plan
 
 

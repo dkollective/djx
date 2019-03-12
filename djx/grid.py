@@ -13,50 +13,51 @@ def deepmerge(base, new):
         return new
 
 
-def parse_simple(tasks, **grid_dim):
+def parse_simple(tasks, grid_dim):
     _tasks = []
-    keys, values = list(grid_dim.items())[0]
+    keys, values = grid_dim.values()
+    dim_length = get_dim_length(grid_dim.values())
     for task in tasks:
-        for v in values:
-            _task = assoc_in(task, ['labels', keys], v)
-            _task = assoc_in(_task, keys.split('.'), v)
-            _tasks.append(_task)
+        for v_id in range(dim_length):
+            _task = task
+            for keys, values in grid_dim.items():
+                _task = assoc_in(_task, keys.split('.'), values[v_id])
+        _tasks.append(_task)
     return _tasks
 
 
-def get_dim_length(merge, replace, labels):
-    lists = [list(merge.values()) + list(replace.values()) + labels]
-    lens = [len(l) for l in lists]
+def get_dim_length(ll):
+    lens = [len(l) for l in ll]
     assert min(lens) == max(lens), 'Different lengths in same dimension.'
     return min(lens)
 
 
-def parse_advanced(tasks,  *, labels, name, merge={}, replace={}):
+def parse_list(tasks,  grid_dim):
     _tasks = []
     for task in tasks:
-        dim_length = get_dim_length(merge, replace, labels)
-        for i in range(dim_length):
-            _task = assoc_in(task, ['labels', name], labels[i])
-            for keys, values in merge.items():
+        for grid_val in grid_dim:
+            _task = task
+            for keys, value in grid_val:
                 k_list = keys.split('.')
                 old_v = get_in(k_list, task)
-                new_v = deepmerge(values[i], old_v)
-                _task = assoc_in(task, k_list, new_v)
-            for keys, values in replace.items():
-                _task = assoc_in(task, keys.split('.'), values[i])
+                new_v = deepmerge(value, old_v)
+                _task = assoc_in(_task, k_list, new_v)
             _tasks.append(_task)
     return _tasks
 
 
 def parse_dim(tasks, grid_dim):
-    if len(grid_dim) == 1:
-        return parse_simple(tasks, **grid_dim)
+    if isinstance(grid_dim, dict):
+        return parse_simple(tasks, grid_dim)
+    elif isinstance(grid_dim, list):
+        return parse_list(tasks, grid_dim)
     else:
-        return parse_advanced(tasks, **grid_dim)
+        raise ValueError("Unkown grid type.")
 
 
 def parse_grid(grid, base_task):
-    tasks = [{'labels': {}, **base_task}]
+    dummy = {'labels': {}, 'parameter': {}, 'data': {}}
+    tasks = [{**dummy, **base_task}]
     for grid_dim in grid:
         tasks = parse_dim(tasks, grid_dim)
     return tasks

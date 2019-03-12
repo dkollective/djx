@@ -73,7 +73,7 @@ def insert_tasks(tasks):
 
 
 def get_next_task(plan_id, worker):
-    query = load_query('get_task.sql')
+    query = load_query('get_next_task.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(query, {'plan_id': plan_id, 'worker': worker})
@@ -82,10 +82,59 @@ def get_next_task(plan_id, worker):
         return records[0]
 
 
-def update_task(result):
-    query = load_query('update_task.sql')
+def update_task_data(task_id, data_stored):
+    query = load_query('update_task_data.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query, dict_to_json(result))
+        cursor.execute(
+            query, {'task_id': task_id, 'data_stored': to_json(data_stored)})
+
+
+def update_task_status(task_id, status):
+    query = load_query('update_task_status.sql')
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            query, {'task_id': task_id, 'status': status})
+
+
+def update_task_files(task_id, output_models):
+    query = load_query('update_task_files.sql')
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            query, {'task_id': task_id, 'output_models': to_json(output_models)})
+
+
+def add_record(task_id, event_name, context, metrics):
+    query = load_query('add_record.sql')
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            query, {
+                'task_id': task_id, 'event_name':event_name,
+                'context': context, 'metrics': metrics
+            })
+
+
+def get_task(task_id):
+    query = load_query('get_task.sql')
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(query, {'task_id': task_id})
+        records = cursor.fetchall()
+    if records:
+        return records[0]
+
+
+def get_plan(plan_id):
+    query = load_query('get_task.sql')
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(query, {'plan_id': plan_id})
+        records = cursor.fetchall()
+    if records:
+        return records
+
 
 setup_ddl()

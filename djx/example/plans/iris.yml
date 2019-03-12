@@ -1,13 +1,15 @@
 project: fit a linear model to the iris dataset
 name: try different regularisations
 source:
-    source_type: PYTHON_MODULE_FROM_ENTRY
+    source_type: __PYTHON_MODULE_FROM_ENTRY
     entry: djx.example.src.iris.cv_fit_save
 task:
     labels:
         itteration: 1
     data:
-        dataset: https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/d546eaee765268bf2f487608c537c05e22e4b221/iris.csv
+        dataset:
+            timestamp: {{NOW}}
+            source: https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/d546eaee765268bf2f487608c537c05e22e4b221/iris.csv
     parameter:
         cross_val_args:
             n_splits: 3
@@ -26,3 +28,22 @@ plan:
     grid:
         - parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]
         - parameter.model_args.alpha: [0, 0.5, 1]
+        -   parameter.model_args.eta0: [10, 1, 0.01, 0.1]
+            parameter.model_args.learning_rate: ['adaptive', 'adaptive', 'constant', 'constant']
+            labels.learning_strategy: [ada10, ada1, const001, const01]
+        # -   -   parameter.model_args:
+        #             eta0: 10
+        #             learning_rate: 'adaptive'
+        #         labels.learning_strategy: ada10
+        #     -   parameter.model_args:
+        #             eta0: 10
+        #             learning_rate: 'adaptive'
+        #         labels.learning_strategy: ada10
+        #     -   parameter.model_args:
+        #             eta0: 10
+        #             learning_rate: 'constant'
+        #         labels.learning_strategy: const001
+        #     -   parameter.model_args:
+        #             eta0: 10
+        #             learning_rate: 'constant'
+        #         labels.learning_strategy: const01

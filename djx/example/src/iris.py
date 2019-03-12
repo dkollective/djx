@@ -32,8 +32,8 @@ def cross_val(X, y, training_args, model_args, cross_val_args):
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
         tdata = 0
-        for e in range(training_args['epochs']):
-            for j in range(10):
+        for e in range(epochs):
+            for j in range(batch_num):
                 X_batch = X_train.iloc[j::batch_num]
                 y_batch = y_train.iloc[j::batch_num]
                 batch_size = len(y_batch)
@@ -53,7 +53,7 @@ def fit_save(X, y, model_args):
     mstore.save(clf, local_model_path)
 
 
-def cv_fit_save(data, *, model_args, dataset_args, cross_val_args):
+def cv_fit_save(data, *, training_args, model_args, dataset_args, cross_val_args):
     X, y = load_dataset(data['dataset'], **dataset_args)
-    cross_val(X, y, model_args, cross_val_args)
+    cross_val(X, y, training_args, model_args, cross_val_args)
     fit_save(X, y, model_args)

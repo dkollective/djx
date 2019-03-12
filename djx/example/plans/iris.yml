@@ -24,6 +24,9 @@ task:
             test_size: 0.4
             target_column: species
             feature_columns: [sepal_length,sepal_width,petal_length,petal_width]
+        training_args:
+            epochs: 5
+            batch_num: 5
 plan:
     grid:
         - parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]

@@ -38,8 +38,8 @@ def gs_check(filename):
     return next(blobs) is not None
 
 
-def create_paths(source):
-    file_id = md5(source.encode()).hexdigest()
+def create_paths(source, timestamp):
+    file_id = md5((source + timestamp).encode()).hexdigest()
     return os.path.join(DATA_TEMP, file_id), os.path.join(DATA_STORE, file_id)
 
 
@@ -84,8 +84,8 @@ def store_file(temp, remote):
         ValueError(f'Unkown data store {remote}')
 
 
-def get_data(source):
-    local_path, remote_path = create_paths(source)
+def get_data(source, timestamp):
+    local_path, remote_path = create_paths(source, timestamp)
     found_temp = check_file(local_path)
     found_remote = check_file(remote_path)
     if not found_temp and not found_remote:
@@ -102,7 +102,7 @@ def get_all_data(data):
     local = {}
     remote = {}
     for k, v in data.items():
-        local_path, remote_path = get_data(v)
+        local_path, remote_path = get_data(**v)
         local[k] = local_path
         remote[k] = remote_path
     return local, remote

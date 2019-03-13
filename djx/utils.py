@@ -26,15 +26,21 @@ def load_yaml(file_name):
         return yaml.load(f.read())
 
 
-def get_git_info(entry):
+def get_commit(entry):
     func = get_method(entry)
     folder = os.path.dirname(get_file(func))
     commit = subprocess.check_output(
         ['git rev-parse HEAD'], shell=True, cwd=folder).decode()
+    return commit
+
+
+def get_repro(entry):
+    func = get_method(entry)
+    folder = os.path.dirname(get_file(func))
     repo = subprocess.check_output(
         ['git config --get remote.origin.url'], shell=True, cwd=folder) \
         .decode()[:-1]
-    return repo, commit
+    return repo
 
 
 def get_worker_info():

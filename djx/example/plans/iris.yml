@@ -1,14 +1,16 @@
 project: fit a linear model to the iris dataset
 name: try different regularisations
 source:
-    source_type: __PYTHON_MODULE_FROM_ENTRY
+    source_type: PYTHON_MODULE
+    repository: __REPO_FROM_ENTRY
+    commit: __COMMIT_FROM_ENTRY
     entry: djx.example.src.iris.cv_fit_save
 task:
     labels:
         itteration: 1
     data:
         dataset:
-            timestamp: {{NOW}}
+            timestamp: __NOW
             source: https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/d546eaee765268bf2f487608c537c05e22e4b221/iris.csv
     parameter:
         cross_val_args:

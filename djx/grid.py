@@ -15,7 +15,6 @@ def deepmerge(base, new):
 
 def parse_simple(tasks, grid_dim):
     _tasks = []
-    keys, values = grid_dim.values()
     dim_length = get_dim_length(grid_dim.values())
     for task in tasks:
         for v_id in range(dim_length):
@@ -61,4 +60,3 @@ def parse_grid(grid, base_task):
     for grid_dim in grid:
         tasks = parse_dim(tasks, grid_dim)
     return tasks
-

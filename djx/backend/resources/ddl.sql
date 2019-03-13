@@ -9,8 +9,6 @@ CREATE TABLE IF NOT EXISTS {schema}.plan (
 	PRIMARY KEY (plan_id)
 );
 
-DROP TABLE IF EXISTS {schema}.task;
-
 CREATE TABLE IF NOT EXISTS {schema}.task (
 	task_id serial NOT NULL,
     plan_id integer NOT NULL,

@@ -11,7 +11,7 @@ def save(model, name):
     model_path = os.path.join(MODEL_STORE, uuid.uuid4().hex + '.pkl')
     joblib.dump(model, model_path)
     task_id = get_task_id()
-    backend.update_task_files(task_id, {name: model_path})
+    backend.update_task_models(task_id, {name: model_path})
 
 
 def load(task_id, name):

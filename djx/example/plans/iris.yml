@@ -31,8 +31,8 @@ task:
             batch_num: 5
 plan:
     grid:
-        - parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]
-        - parameter.model_args.alpha: [0, 0.5, 1]
+        -   parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]
+        -   parameter.model_args.alpha: [0, 0.5, 1]
         -   parameter.model_args.eta0: [10, 1, 0.01, 0.1]
             parameter.model_args.learning_rate: ['adaptive', 'adaptive', 'constant', 'constant']
             labels.learning_strategy: [ada10, ada1, const001, const01]

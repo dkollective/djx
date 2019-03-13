@@ -9,7 +9,7 @@ log = logging.getLogger()
 __task = {}
 
 
-def new_task(**task):
+def new_task(task):
     global __task
     __task = task
 
@@ -33,11 +33,10 @@ def run_task(task):
     new_task(task)
     log.info('get data')
     data_local, data_stored = get_all_data(task['data'])
-
+    backend.update_task_data(task['task_id'], data_stored)
     func = get_func_from_source(**task['source'])
-
     log.info('run task')
-    func(task['data_local'], **task['parameter'])
+    func(data_local, **task['parameter'])
 
 
 def run_next(plan_id):
@@ -49,7 +48,7 @@ def run_next(plan_id):
     else:
         task_id = task['task_id']
         try:
-            run_task(**task)
+            run_task(task)
             backend.update_task_status(task_id, 'FINISHED')
         except BaseException as e:
             backend.update_task_status(task_id, 'FAILED')

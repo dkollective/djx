@@ -98,8 +98,8 @@ def update_task_status(task_id, status):
             query, {'task_id': task_id, 'status': status})
 
 
-def update_task_files(task_id, output_models):
-    query = load_query('update_task_files.sql')
+def update_task_models(task_id, output_models):
+    query = load_query('update_task_models.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -112,8 +112,8 @@ def add_record(task_id, event_name, context, metrics):
         cursor = conn.cursor()
         cursor.execute(
             query, {
-                'task_id': task_id, 'event_name':event_name,
-                'context': context, 'metrics': metrics
+                'task_id': task_id, 'event_name': event_name,
+                'context': to_json(context), 'metrics': to_json(metrics)
             })
 
 

@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS {schema}.plan (
 	PRIMARY KEY (plan_id)
 );
 
+DROP TABLE IF EXISTS {schema}.task;
+
 CREATE TABLE IF NOT EXISTS {schema}.task (
 	task_id serial NOT NULL,
     plan_id integer NOT NULL,
@@ -21,17 +23,18 @@ CREATE TABLE IF NOT EXISTS {schema}.task (
     date_updated timestamp DEFAULT NOW(),
     date_started timestamp NULL,
     date_finished timestamp NULL,
-    data_stored jsonb '{}',
-    output_models jsonb '{}',
+    data_stored jsonb DEFAULT '{{}}'::jsonb,
+    output_models jsonb DEFAULT '{{}}'::jsonb,
 	PRIMARY KEY (task_id)
 );
+
 
 CREATE TABLE IF NOT EXISTS {schema}.record (
     task_id serial NOT NULL,
     date_added timestamp DEFAULT NOW(),
-    "event_name" text,
-    context jsonb '{}',
-    metrics jsonb '{}'
+    "event_name" text NULL,
+    context jsonb NULL,
+    metrics jsonb NULL
 );
 
 CREATE INDEX IF NOT EXISTS task_plan_id ON {schema}.task(plan_id);

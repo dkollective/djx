@@ -1,12 +1,7 @@
+import logging
 from djx.backend import psql as backend
 from djx.utils import get_method, get_worker_info
 from djx.store import get_all_data, store_data
-
-from djx import record
-
-import djx.example.src.iris
-
-import logging
 
 log = logging.getLogger()
 
@@ -36,7 +31,6 @@ def get_func_from_source(entry, source_type, **kwargs):
 
 def run_task(task):
     new_task(task)
-    record.reset()
     log.info('get data')
     data_local, data_stored = get_all_data(task['data'])
 
@@ -44,7 +38,6 @@ def run_task(task):
 
     log.info('run task')
     func(task['data_local'], **task['parameter'])
-
 
 
 def run_next(plan_id):

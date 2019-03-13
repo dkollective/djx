@@ -21,7 +21,7 @@ def parse_simple(tasks, grid_dim):
             _task = task
             for keys, values in grid_dim.items():
                 _task = assoc_in(_task, keys.split('.'), values[v_id])
-        _tasks.append(_task)
+            _tasks.append(_task)
     return _tasks
 
 

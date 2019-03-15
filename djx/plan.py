@@ -35,13 +35,12 @@ def add_plan(plan_file):
     plan = load_yaml(plan_file)
     plan = preprocess_plan(plan)
     plan_id = backend.insert_plan(plan)
-    if 'plan' in plan:
-        if 'grid' in plan['plan']:
-            tasks = parse_grid(plan['plan']['grid'], plan['task'])
-        else:
-            raise NotImplementedError('Currently only grid plan implemented.')
-    else:
+    if not plan['plan']:
         tasks = [plan['task']]
+    elif 'grid' in plan['plan']:
+        tasks = parse_grid(plan['plan']['grid'], plan['task'])
+    else:
+        raise NotImplementedError('Currently only grid plan implemented.')
     tasks = [{**t, 'plan_id': plan_id} for t in tasks]
     backend.insert_tasks(tasks)
     print(f'Added plan {plan_id}')

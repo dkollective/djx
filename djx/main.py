@@ -16,11 +16,13 @@ def main():
         add_plan(args['<plan-file>'])
 
     elif args.get('run'):
-        run_next(int(args['<plan-id>']))
+        while run_next(int(args['<plan-id>'])):
+            pass
 
     elif args.get('add-run'):
         plan_id = add_plan(args['<plan-file>'])
-        run_next(plan_id)
+        while run_next(plan_id):
+            pass
 
 
 if __name__ == "__main__":

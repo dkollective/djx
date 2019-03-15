@@ -53,3 +53,4 @@ def run_next(plan_id):
         except BaseException as e:
             backend.update_task_status(task_id, 'FAILED')
             raise e
+        return task_id

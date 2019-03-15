@@ -28,11 +28,13 @@ CREATE TABLE IF NOT EXISTS {schema}.task (
 
 
 CREATE TABLE IF NOT EXISTS {schema}.record (
-    task_id serial NOT NULL,
+    record_id serial NOT NULL,
+    task_id integer NOT NULL,
     date_added timestamp DEFAULT NOW(),
     "event_name" text NULL,
     context jsonb NULL,
-    metrics jsonb NULL
+    metrics jsonb NULL,
+	PRIMARY KEY (record_id)
 );
 
 CREATE INDEX IF NOT EXISTS task_plan_id ON {schema}.task(plan_id);

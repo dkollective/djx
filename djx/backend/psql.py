@@ -117,6 +117,16 @@ def add_record(task_id, event_name, context, metrics):
             })
 
 
+def get_plan_records(plan_id):
+    query = load_query('get_plan_records.sql')
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(query, {'plan_id': plan_id})
+        records = cursor.fetchall()
+    if records:
+        return records
+
+
 def get_task(task_id):
     query = load_query('get_task.sql')
     with get_connection() as conn:

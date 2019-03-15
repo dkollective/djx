@@ -15,14 +15,17 @@ setup(
         'joblib==0.13.2'
     ],
     extras_require={
-        'dev': ['ipdb',
-                'jupyter',
-                'jupyter-client',
-                'jupyter-console',
-                'ipython',
-                'sklearn',
-                'pylint',
-                'flake8']
+        'example': [
+            'ipdb',
+            'jupyter',
+            'jupyter-client',
+            'jupyter-console',
+            'ipython',
+            'sklearn',
+            'pylint',
+            'flake8',
+            'matplotlib',
+            'seaborn']
     },
     scripts=[
         'scripts/djx'

@@ -18,24 +18,28 @@ task:
             shuffle: False
             random_state: 0
         model_args:
-            alpha: 0.0001
-            l1_ratio: 0.5
+            alpha: 0.0
+            l1_ratio: 0.0
+            loss: log
             learning_rate: 'constant'
-            eta0: 0.1
+            penalty: elasticnet
+            eta0: 0.0001
         dataset_args:
-            test_size: 0.4
+            # test_size: 0.4
             target_column: species
             feature_columns: [sepal_length,sepal_width,petal_length,petal_width]
         training_args:
-            epochs: 5
-            batch_num: 5
+            epochs: 4
+            batch_num: 10
 plan:
-    grid:
-        -   parameter.model_args.l1_ratio: [0.01, 0.001, 0.0001]
-        -   parameter.model_args.alpha: [0, 0.5, 1]
-        -   parameter.model_args.eta0: [10, 1, 0.01, 0.1]
-            parameter.model_args.learning_rate: ['adaptive', 'adaptive', 'constant', 'constant']
-            labels.learning_strategy: [ada10, ada1, const001, const01]
+    # grid:
+        # -   parameter.model_args.l1_ratio: [0, 0.5, 1]
+        #     labels.l1_ratio: [0, 0.5, 1]
+        # -   parameter.model_args.eta0: [0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001]
+            # labels.eta0: [0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001]
+        # -   parameter.model_args.eta0: [10, 1, 0.01, 0.1]
+        #     parameter.model_args.learning_rate: ['adaptive', 'adaptive', 'constant', 'constant']
+        #     labels.learning_strategy: [ada10, ada1, const001, const01]
         # -   -   parameter.model_args:
         #             eta0: 10
         #             learning_rate: 'adaptive'

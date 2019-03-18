@@ -1,0 +1,18 @@
+plan:
+    grid:
+        -   -   parameter.model_args:
+                    eta0: 10
+                    learning_rate: 'adaptive'
+                labels.learning_strategy: ada10
+            -   parameter.model_args:
+                    eta0: 10
+                    learning_rate: 'adaptive'
+                labels.learning_strategy: ada10
+            -   parameter.model_args:
+                    eta0: 10
+                    learning_rate: 'constant'
+                labels.learning_strategy: const001
+            -   parameter.model_args:
+                    eta0: 10
+                    learning_rate: 'constant'
+                labels.learning_strategy: const01

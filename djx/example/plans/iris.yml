@@ -5,7 +5,12 @@ source:
     repository: __REPO_FROM_ENTRY
     commit: __COMMIT_FROM_ENTRY
     entry: djx.example.src.iris.cv_fit_save
-task:
+data:
+    iris:
+        timestamp: __NOW
+        source: https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/d546eaee765268bf2f487608c537c05e22e4b221/iris.csv
+
+base:
     labels:
         itteration: 1
     data:
@@ -15,44 +20,41 @@ task:
     parameter:
         cross_val_args:
             n_splits: 3
-            shuffle: False
+            shuffle: True
             random_state: 0
         model_args:
-            alpha: 0.0
-            l1_ratio: 0.0
-            loss: log
-            learning_rate: 'constant'
-            penalty: elasticnet
-            eta0: 0.0001
+            n_estimators: 100
+            max_depth: 2
+            min_samples_leaf: 1
+            random_state: 0
         dataset_args:
-            # test_size: 0.4
             target_column: species
-            feature_columns: [sepal_length,sepal_width,petal_length,petal_width]
-        training_args:
-            epochs: 4
-            batch_num: 10
-plan:
-    # grid:
-        # -   parameter.model_args.l1_ratio: [0, 0.5, 1]
-        #     labels.l1_ratio: [0, 0.5, 1]
-        # -   parameter.model_args.eta0: [0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001]
-            # labels.eta0: [0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001]
-        # -   parameter.model_args.eta0: [10, 1, 0.01, 0.1]
-        #     parameter.model_args.learning_rate: ['adaptive', 'adaptive', 'constant', 'constant']
-        #     labels.learning_strategy: [ada10, ada1, const001, const01]
-        # -   -   parameter.model_args:
-        #             eta0: 10
-        #             learning_rate: 'adaptive'
-        #         labels.learning_strategy: ada10
-        #     -   parameter.model_args:
-        #             eta0: 10
-        #             learning_rate: 'adaptive'
-        #         labels.learning_strategy: ada10
-        #     -   parameter.model_args:
-        #             eta0: 10
-        #             learning_rate: 'constant'
-        #         labels.learning_strategy: const001
-        #     -   parameter.model_args:
-        #             eta0: 10
-        #             learning_rate: 'constant'
-        #         labels.learning_strategy: const01
+            feature_columns:
+              - sepal_length
+              - sepal_width
+              - petal_length
+              - petal_width
+        save: false
+experiment:
+    grid:
+        - parameter.cross_val_args.random_state: [0, 1, 2]
+          parameter.save: [true, false, false]
+          labels.cv_itteration: [0, 1, 2]
+        - parameter.model_args.max_depth: [2, 3, 4, 5]
+          # labels.max_depth: [2, 4]
+        - - parameter.model_args:
+              min_samples_split: 10
+              min_samples_leaf: 1
+            labels.min_samples: 'few_split_only'
+          - parameter.model_args:
+              min_samples_split: 10
+              min_samples_leaf: 1
+            labels.min_samples: 'many_split_only'
+          - parameter.model_args:
+              min_samples_split: 10
+              min_samples_leaf: 5
+            labels.min_samples: 'few_both'
+          - parameter.model_args:
+              min_samples_split: 40
+              min_samples_leaf: 20
+            labels.min_samples: 'many_both'

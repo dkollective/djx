@@ -1,65 +1,62 @@
 import os
 import pandas as pd
 import uuid
-from time import sleep
-from djx import record
-from djx import mstore
+import joblib
+import djx
 from structlog import get_logger
-from sklearn.model_selection import StratifiedKFold
-from sklearn.linear_model import SGDClassifier
-from sklearn.preprocessing import normalize
-from sklearn.datasets import fetch_openml
+from sklearn.model_selection import KFold
+from sklearn.ensemble import RandomForestClassifier
 
 DATA_FOLDER = 'data'
 logger = get_logger()
 
 
-def load_dataset(dataset, target_column, feature_columns):
-    df = pd.read_csv(dataset)
-    X = df[feature_columns]
-    y = df[target_column]
-    X = pd.DataFrame(normalize(X), columns=X.columns)
+def load(loader, name):
+    return loader(name)
+
+
+def cv_fit_save(model_args, dataset_args, cross_val_args, save):
+    X, y = load_dataset(**dataset_args)
+    cross_val(X, y, model_args, cross_val_args)
+    if save:
+        fit_save(X, y, model_args)
+
+
+def load_dataset(target_column, feature_columns):
+    df = djx.data(pd.read_csv, 'iris')
+    X = df[feature_columns].values
+    y = df[target_column].values
     return X, y
 
 
-def cross_val(X, y, training_args, model_args, cross_val_args):
-    cv = StratifiedKFold(**cross_val_args)
-    classes = y.unique()
-
-
-    epochs = training_args['epochs']
-    batch_num = training_args['batch_num']
-
+def cross_val(X, y, model_args, cross_val_args):
+    cv = KFold(**cross_val_args)
+    clf = RandomForestClassifier(**model_args)
     for i, (train_index, test_index) in enumerate(cv.split(X, y)):
-        record.bind(cross_val_split=i)
-        clf = SGDClassifier(**model_args)
+        djx.record.bind(cross_val_itteration=i)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        tdata = 0
-        for e in range(epochs):
-            for j in range(batch_num):
-                X_batch = X_train[j::batch_num]
-                y_batch = y_train[j::batch_num]
-                batch_size = len(y_batch)
-                clf.partial_fit(X_batch, y_batch, classes=classes)
-                insample = clf.score(X_train, y_train)
-                outofsample = clf.score(X_test, y_test)
-                tdata += batch_size
-                record.bind(batch=j, epoch=j, datasize=tdata)
-                record.rec('partial fit', accuracy=insample, set='train')
-                record.rec('partial fit', accuracy=outofsample, set='test')
-        record.rec('complete fit', accuracy=insample, set='train')
-        record.rec('complete fit', accuracy=outofsample, set='test')
+        clf.fit(X_train, y_train)
+        in_acc = clf.score(X_train, y_train)
+        out_acc = clf.score(X_test, y_test)
+        djx.record.rec(
+                'cv fit finished',
+                metrics={'accuracy': in_acc},
+                context={'set': 'train'})
+        djx.record.rec(
+                'cv fit finished',
+                metrics={'accuracy': out_acc},
+                context={'set': 'test'})
 
 
 def fit_save(X, y, model_args):
-    local_model_path = os.path.join(DATA_FOLDER, uuid.uuid4().hex + '.pkl')
-    clf = SGDClassifier(**model_args)
+    temp_path = djx.record.get_temp_path()
+    clf = RandomForestClassifier(**model_args)
     clf.fit(X, y)
-    mstore.save(clf, local_model_path)
-
-
-def cv_fit_save(data, *, training_args, model_args, dataset_args, cross_val_args):
-    X, y = load_dataset(data['dataset'], **dataset_args)
-    cross_val(X, y, training_args, model_args, cross_val_args)
-    fit_save(X, y, model_args)
+    acc = clf.score(X, y)
+    joblib.dump(clf, temp_path)
+    djx.record.rec(
+        'fit finished',
+        metrics={'accuracy': acc},
+        context={'set': 'all'},
+        artefacts={'model': temp_path})

@@ -28,11 +28,11 @@ def rm(*args):
         k: v for k, v in __context.get(task_id, {}).items() if k not in args}
 
 
-def rec(event_name, **metrics):
+def rec(event_name, metrics, context):
     task_id = get_task_id()
-    context = __context.get(task_id, {})
+    context = {**__context.get(task_id, {}), **context}
     backend.add_record(
-        task_id, event_name, __context.get(task_id, {}), metrics)
+        task_id, event_name, context, metrics)
     metrics_str = ' | '.join([f'{k}:{v}' for k, v in metrics.items()])
     context_str = ' | '.join([f'{k}:{v}' for k, v in context.items()])
     log.warning(f'{task_id} >> {event_name} >> {context_str} >> {metrics_str}')
@@ -56,3 +56,5 @@ def get_plan_records_df(plan_id):
     return pd.DataFrame.from_records(_records)[order]
 
 
+def get_temp_path():
+    return os.path.join(DATA_FOLDER, uuid.uuid4().hex + '.pkl')

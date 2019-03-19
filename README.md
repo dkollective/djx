@@ -34,6 +34,6 @@ djx run 1
 
 # credits
 
-This library originated in discussions and test implementation by Levin Brinkmann,
+This library originated in discussions and test implementations by Levin Brinkmann,
 X and Y about the setup of a lightweight experimental
 framework for reproducable and traceable data science research.

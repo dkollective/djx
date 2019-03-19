@@ -1,2 +1,2 @@
 # TODO
-* make sure task are not assigned to two different workers
+* make sure job are not assigned to two different workers

@@ -1,22 +1,22 @@
--- DROP TABLE IF EXISTS {schema}.plan;
--- DROP TABLE IF EXISTS {schema}.task;
+-- DROP TABLE IF EXISTS {schema}.experiment;
+-- DROP TABLE IF EXISTS {schema}.job;
 -- DROP TABLE IF EXISTS {schema}.record;
 
 
-CREATE TABLE IF NOT EXISTS {schema}.plan (
-	plan_id serial NOT NULL,
+CREATE TABLE IF NOT EXISTS {schema}.experiment (
+	exp_id serial NOT NULL,
     project text NULL,
     "name" text NULL,
     source jsonb NULL,
-    task jsonb NULL,
-    plan jsonb NULL,
+    job jsonb NULL,
+    experiment jsonb NULL,
     date_created timestamp DEFAULT NOW(),
-	PRIMARY KEY (plan_id)
+	PRIMARY KEY (exp_id)
 );
 
-CREATE TABLE IF NOT EXISTS {schema}.task (
-	task_id serial NOT NULL,
-    plan_id integer NOT NULL,
+CREATE TABLE IF NOT EXISTS {schema}.job (
+	job_id serial NOT NULL,
+    exp_id integer NOT NULL,
     labels jsonb NULL,
     parameter jsonb NULL,
     "data" jsonb NULL,
@@ -28,13 +28,13 @@ CREATE TABLE IF NOT EXISTS {schema}.task (
     date_finished timestamp NULL,
     data_stored jsonb DEFAULT '{{}}'::jsonb,
     output_models jsonb DEFAULT '{{}}'::jsonb,
-	PRIMARY KEY (task_id)
+	PRIMARY KEY (job_id)
 );
 
 
 CREATE TABLE IF NOT EXISTS {schema}.record (
     record_id serial NOT NULL,
-    task_id integer NOT NULL,
+    job_id integer NOT NULL,
     date_added timestamp DEFAULT NOW(),
     "event_name" text NULL,
     context jsonb NULL,
@@ -43,4 +43,4 @@ CREATE TABLE IF NOT EXISTS {schema}.record (
 	PRIMARY KEY (record_id)
 );
 
-CREATE INDEX IF NOT EXISTS task_plan_id ON {schema}.task(plan_id);
+CREATE INDEX IF NOT EXISTS job_exp_id ON {schema}.job(exp_id);

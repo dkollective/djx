@@ -1,14 +1,14 @@
 """
 Usage:
-    djx add <plan-file>
-    djx run <plan-id>
-    djx add-run <plan-file>
+    djx add <exp-file>
+    djx run <exp-id>
+    djx add-run <exp-file>
 """
 import logging
 import djx
 from docopt import docopt
-from djx.plan import add_plan
-from djx.task import run_next
+from djx.exp import add_exp
+from djx.job import run_next
 
 log = logging.getLogger(djx.__name__)
 
@@ -21,15 +21,15 @@ if not log.handlers:
 def main():
     args = docopt(__doc__)
     if args.get('add'):
-        add_plan(args['<plan-file>'])
+        add_exp(args['<exp-file>'])
 
     elif args.get('run'):
-        while run_next(int(args['<plan-id>'])):
+        while run_next(int(args['<exp-id>'])):
             pass
 
     elif args.get('add-run'):
-        plan_id = add_plan(args['<plan-file>'])
-        while run_next(plan_id):
+        exp_id = add_exp(args['<exp-file>'])
+        while run_next(exp_id):
             pass
 
 

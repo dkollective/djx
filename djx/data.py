@@ -1,7 +1,7 @@
 from hashlib import md5
 import os
 from djx.data_utils import check_file, copy_file
-from djx.task import get_data_path
+from djx.job import get_data_path
 
 
 DATA_TEMP = os.environ['DJX_DATA_TEMP']

@@ -1,4 +1,4 @@
-plan:
+exp:
     grid:
         -   -   parameter.model_args:
                     eta0: 10

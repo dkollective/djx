@@ -31,24 +31,24 @@ def parse_value(value, keys, base):
         return value
 
 
-def preprocess_plan(plan):
-    plan = deepscan([], plan, plan)
-    return plan
+def preprocess_exp(exp):
+    exp = deepscan([], exp, exp)
+    return exp
 
 
-def add_plan(plan_file):
-    plan = load_yaml(plan_file)
-    plan = preprocess_plan(plan)
-    plan_id = backend.insert_plan(plan)
-    data_local, data_stored = get_all_data(plan['data'])
-    task = {**plan['task'], 'data': plan['data'], 'data_stored': data_stored}
-    if not plan['plan']:
-        tasks = [task]
-    elif 'grid' in plan['plan']:
-        tasks = parse_grid(plan['plan']['grid'], task)
+def add_exp(exp_file):
+    exp = load_yaml(exp_file)
+    exp = preprocess_exp(exp)
+    exp_id = backend.insert_exp(exp)
+    data_local, data_stored = get_all_data(exp['data'])
+    job = {**exp['job'], 'data': exp['data'], 'data_stored': data_stored}
+    if not exp['experiment']:
+        jobs = [job]
+    elif 'grid' in exp['experiment']:
+        jobs = parse_grid(exp['experiment']['grid'], job)
     else:
-        raise NotImplementedError('Currently only grid plan implemented.')
-    tasks = [{**t, 'plan_id': plan_id} for t in tasks]
-    backend.insert_tasks(tasks)
-    log.info(f'Added plan {plan_id}')
-    return plan_id
+        raise NotImplementedError('Currently only grid exp implemented.')
+    jobs = [{**t, 'exp_id': exp_id} for t in jobs]
+    backend.insert_jobs(jobs)
+    log.info(f'Added exp {exp_id}')
+    return exp_id

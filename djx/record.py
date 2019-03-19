@@ -3,7 +3,7 @@ import os
 import uuid
 import pandas as pd
 from toolz import dissoc
-from djx.task import get_task_id
+from djx.job import get_job_id
 from djx.data_utils import copy_file
 from djx.backend import psql as backend
 
@@ -38,39 +38,39 @@ def store_artifacts(artifacts):
 
 def reset():
     global __context
-    task_id = get_task_id()
-    __context[task_id] = {}
+    job_id = get_job_id()
+    __context[job_id] = {}
 
 
 def bind(**context):
     global __context
-    task_id = get_task_id()
-    __context[task_id] = {**__context.get(task_id, {}), **context}
+    job_id = get_job_id()
+    __context[job_id] = {**__context.get(job_id, {}), **context}
 
 
 def rm(*args):
     global __context
-    task_id = get_task_id()
-    __context[task_id] = {
-        k: v for k, v in __context.get(task_id, {}).items() if k not in args}
+    job_id = get_job_id()
+    __context[job_id] = {
+        k: v for k, v in __context.get(job_id, {}).items() if k not in args}
 
 
 def rec(event_name, metrics={}, context={}, artifacts={}):
-    task_id = get_task_id()
+    job_id = get_job_id()
     _artifacts = store_artifacts(artifacts)
-    context = {**__context.get(task_id, {}), **context}
+    context = {**__context.get(job_id, {}), **context}
     backend.add_record(
-        task_id, event_name, context, metrics, _artifacts)
+        job_id, event_name, context, metrics, _artifacts)
     metrics_str = ' | '.join([f'{k}:{v}' for k, v in metrics.items()])
     context_str = ' | '.join([f'{k}:{v}' for k, v in context.items()])
     artifact_str = '\n stored >> '.join([''] + [f'{k} : {v}' for k, v in _artifacts.items()])
-    log_str = f'{task_id} >> {event_name} >> {context_str} >> {metrics_str}{artifact_str}'
+    log_str = f'{job_id} >> {event_name} >> {context_str} >> {metrics_str}{artifact_str}'
     log.info(log_str)
 
 
-def get_plan_records_df(plan_id):
-    records = backend.get_plan_records(plan_id)
-    order = ['plan_id', 'task_id', 'date_added', 'project', 'plan_name', 'event_name']
+def get_exp_records_df(exp_id):
+    records = backend.get_exp_records(exp_id)
+    order = ['exp_id', 'job_id', 'date_added', 'project', 'exp_name', 'event_name']
     expand = ['labels', 'context', 'metrics']
     expand_set = {ex: set() for ex in expand}
     _records = []

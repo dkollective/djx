@@ -19,6 +19,24 @@ The code you want to run takes a (possible nested) parameters as input. There ar
 method to get data, to write metrics and to store artifacts, such as a trained model.
 Have a look at the [example code](djx/example/src/iris.py).
 
+# enviroment
+djx runs currently on postgres. You need to provide credentials as enviroment variables.
+Additional three folders, one local temporary, one for persistant storage of datasets and
+one for persistent storage of artifacts need to be defined.
+
+```
+export DJX_PG_HOST=
+export DJX_PG_PORT=
+export DJX_PG_USER=
+export DJX_PG_PASSWORD=
+export DJX_PG_DBNAME=
+export DJX_PG_SCHEMA=
+
+export DJX_DATA_TEMP=
+export DJX_DATA_STORE=
+export DJX_ARTIFACT_STORE=
+```
+
 # use it
 
 ### add an experiment to the system.

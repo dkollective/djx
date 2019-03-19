@@ -1,7 +1,6 @@
 import logging
 from djx.backend import psql as backend
 from djx.utils import get_method, get_worker_info
-from djx.store import get_all_data, store_data
 
 log = logging.getLogger()
 
@@ -22,6 +21,10 @@ def get_labels():
     return __task.get('labels')
 
 
+def get_data_path(name):
+    return __task['data_stored'].get(name)
+
+
 def get_func_from_source(entry, source_type, **kwargs):
     if source_type == 'PYTHON_MODULE':
         return get_method(entry)
@@ -32,11 +35,9 @@ def get_func_from_source(entry, source_type, **kwargs):
 def run_task(task):
     new_task(task)
     log.info('get data')
-    data_local, data_stored = get_all_data(task['data'])
-    backend.update_task_data(task['task_id'], data_stored)
     func = get_func_from_source(**task['source'])
     log.info('run task')
-    func(data_local, **task['parameter'])
+    func(**task['parameter'])
 
 
 def run_next(plan_id):

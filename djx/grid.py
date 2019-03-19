@@ -20,7 +20,11 @@ def parse_simple(tasks, grid_dim):
         for v_id in range(dim_length):
             _task = task
             for keys, values in grid_dim.items():
-                _task = assoc_in(_task, keys.split('.'), values[v_id])
+                split_keys = keys.split('.')
+                value = values[v_id]
+                _task = assoc_in(_task, split_keys, value)
+            if len(grid_dim.values()) == 1:
+                _task = assoc_in(_task, ['labels', split_keys[-1]], value)
             _tasks.append(_task)
     return _tasks
 
@@ -31,15 +35,15 @@ def get_dim_length(ll):
     return min(lens)
 
 
-def parse_list(tasks,  grid_dim):
+def parse_list(tasks, grid_dim):
     _tasks = []
     for task in tasks:
         for grid_val in grid_dim:
             _task = task
-            for keys, value in grid_val:
+            for keys, value in grid_val.items():
                 k_list = keys.split('.')
                 old_v = get_in(k_list, task)
-                new_v = deepmerge(value, old_v)
+                new_v = deepmerge(old_v, value)
                 _task = assoc_in(_task, k_list, new_v)
             _tasks.append(_task)
     return _tasks
@@ -55,7 +59,7 @@ def parse_dim(tasks, grid_dim):
 
 
 def parse_grid(grid, base_task):
-    dummy = {'labels': {}, 'parameter': {}, 'data': {}}
+    dummy = {'labels': {}, 'parameter': {}, 'data': {}, 'data_stored': {}}
     tasks = [{**dummy, **base_task}]
     for grid_dim in grid:
         tasks = parse_dim(tasks, grid_dim)

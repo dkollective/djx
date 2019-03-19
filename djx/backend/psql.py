@@ -58,7 +58,7 @@ def insert_plan(plan):
 
 def insert_tasks(tasks):
     print(tasks)
-    columns = ['plan_id', 'parameter', 'data', 'labels']
+    columns = ['plan_id', 'parameter', 'data', 'labels', 'data_stored']
     data = [
         [to_json(task.get(col)) for col in columns]
         for task in tasks
@@ -106,14 +106,15 @@ def update_task_models(task_id, output_models):
             query, {'task_id': task_id, 'output_models': to_json(output_models)})
 
 
-def add_record(task_id, event_name, context, metrics):
+def add_record(task_id, event_name, context, metrics, artifacts):
     query = load_query('add_record.sql')
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(
             query, {
                 'task_id': task_id, 'event_name': event_name,
-                'context': to_json(context), 'metrics': to_json(metrics)
+                'context': to_json(context), 'metrics': to_json(metrics),
+                'artifacts': to_json(artifacts)
             })
 
 

@@ -4,10 +4,18 @@ Usage:
     djx run <plan-id>
     djx add-run <plan-file>
 """
-
+import logging
+import djx
 from docopt import docopt
 from djx.plan import add_plan
 from djx.task import run_next
+
+log = logging.getLogger(djx.__name__)
+
+log.setLevel(logging.DEBUG)
+if not log.handlers:
+    ch = logging.StreamHandler()
+    log.addHandler(ch)
 
 
 def main():

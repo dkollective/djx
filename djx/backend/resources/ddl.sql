@@ -1,3 +1,8 @@
+-- DROP TABLE IF EXISTS {schema}.plan;
+-- DROP TABLE IF EXISTS {schema}.task;
+-- DROP TABLE IF EXISTS {schema}.record;
+
+
 CREATE TABLE IF NOT EXISTS {schema}.plan (
 	plan_id serial NOT NULL,
     project text NULL,
@@ -34,6 +39,7 @@ CREATE TABLE IF NOT EXISTS {schema}.record (
     "event_name" text NULL,
     context jsonb NULL,
     metrics jsonb NULL,
+    artifacts jsonb NULL,
 	PRIMARY KEY (record_id)
 );
 

@@ -13,4 +13,4 @@ worker = %(worker)s,
 date_started = NOW()
 FROM ot
 WHERE tt.task_id = ot.task_id
-RETURNING tt.plan_id, tt.task_id, source, project, tt.data, tt.parameter, tt.labels, tt.worker;
+RETURNING tt.plan_id, tt.task_id, source, project, tt.data, tt.data_stored, tt.parameter, tt.labels, tt.worker;

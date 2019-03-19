@@ -1,18 +1,8 @@
-import os
 import pandas as pd
-import uuid
 import joblib
-import djx
-from structlog import get_logger
+import djx.record
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
-
-DATA_FOLDER = 'data'
-logger = get_logger()
-
-
-def load(loader, name):
-    return loader(name)
 
 
 def cv_fit_save(model_args, dataset_args, cross_val_args, save):
@@ -23,7 +13,7 @@ def cv_fit_save(model_args, dataset_args, cross_val_args, save):
 
 
 def load_dataset(target_column, feature_columns):
-    df = djx.data(pd.read_csv, 'iris')
+    df = djx.data.load(pd.read_csv, 'iris')
     X = df[feature_columns].values
     y = df[target_column].values
     return X, y
@@ -59,4 +49,4 @@ def fit_save(X, y, model_args):
         'fit finished',
         metrics={'accuracy': acc},
         context={'set': 'all'},
-        artefacts={'model': temp_path})
+        artifacts={'model': temp_path})

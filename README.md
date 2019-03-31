@@ -53,5 +53,5 @@ djx run 1
 # credits
 
 This library originated in discussions by Levin Brinkmann,
-X and Y about the setup of a lightweight experimental
+Stefan Matting and Sebastian Jäger about the setup of a lightweight experimental
 framework for reproducible and traceable data science research.

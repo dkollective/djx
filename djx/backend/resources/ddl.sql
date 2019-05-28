@@ -2,6 +2,8 @@
 -- DROP TABLE IF EXISTS {schema}.job;
 -- DROP TABLE IF EXISTS {schema}.record;
 
+CREATE SCHEMA IF NOT EXISTS {schema};
+
 
 CREATE TABLE IF NOT EXISTS {schema}.experiment (
 	exp_id serial NOT NULL,

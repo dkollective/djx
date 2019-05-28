@@ -52,12 +52,10 @@ def insert_exp(exp):
         cursor = conn.cursor()
         cursor.execute(query, dict_to_json(exp))
         inserted = cursor.fetchall()
-    print(inserted)
     return inserted[0]['exp_id']
 
 
 def insert_jobs(jobs):
-    print(jobs)
     columns = ['exp_id', 'parameter', 'data', 'labels', 'data_stored']
     data = [
         [to_json(job.get(col)) for col in columns]

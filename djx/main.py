@@ -7,6 +7,7 @@ Usage:
 import djx
 from docopt import docopt
 from djx.exp import add_exp
+from djx.run import run_job
 # from djx.job import run_next
 
 # log = logging.getLogger(djx.__name__)
@@ -23,7 +24,7 @@ def main():
         add_exp(args['<exp-file>'])
 
     elif args.get('run'):
-        run_exp(args['<job-file>'])
+        run_job(args['<job-file>'])
 
 
 

@@ -10,7 +10,8 @@ setup(
         'pandas==0.23.3',
         'docopt==0.6.2',
         'structlog==19.1.0',
-        'joblib==0.13.2'
+        'joblib==0.13.2',
+        'mlflow'
     ],
     extras_require={
         'example': [

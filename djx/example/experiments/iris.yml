@@ -29,11 +29,6 @@ job:
         - petal_width
 experiment:
   grid:
-    - parameter.cross_val_args.random_state: [0, 1, 2]
-      parameter.save: [true, false, false]
-      labels.cv_itteration: [0, 1, 2]
-    - parameter.model_args.max_depth: [2, 4, 6]
-      # labels.max_depth: [2, 4]
     - - parameter.model_args:
           min_samples_split: 10
           min_samples_leaf: 1

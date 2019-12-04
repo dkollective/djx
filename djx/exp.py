@@ -1,7 +1,7 @@
 import datetime
 import logging
 from djx.utils import load_yaml, get_commit, get_repro
-from djx.backend import psql as backend
+# from djx.backend import psql as backend
 from djx.grid import parse_grid
 from djx.data import get_all_data
 from toolz import get_in

@@ -39,16 +39,19 @@ def preprocess_exp(exp):
 def add_exp(exp_file):
     exp = load_yaml(exp_file)
     exp = preprocess_exp(exp)
-    exp_id = backend.insert_exp(exp)
-    data_local, data_stored = get_all_data(exp['data'])
-    job = {**exp['job'], 'data': exp['data'], 'data_stored': data_stored}
-    if not exp['experiment']:
-        jobs = [job]
-    elif 'grid' in exp['experiment']:
-        jobs = parse_grid(exp['experiment']['grid'], job)
-    else:
-        raise NotImplementedError('Currently only grid exp implemented.')
-    jobs = [{**t, 'exp_id': exp_id} for t in jobs]
-    backend.insert_jobs(jobs)
-    log.info(f'Added exp {exp_id}')
-    return exp_id
+    print(exp)
+    
+    
+    # exp_id = backend.insert_exp(exp)
+    # data_local, data_stored = get_all_data(exp['data'])
+    # job = {**exp['job'], 'data': exp['data'], 'data_stored': data_stored}
+    # if not exp['experiment']:
+    #     jobs = [job]
+    # elif 'grid' in exp['experiment']:
+    #     jobs = parse_grid(exp['experiment']['grid'], job)
+    # else:
+    #     raise NotImplementedError('Currently only grid exp implemented.')
+    # jobs = [{**t, 'exp_id': exp_id} for t in jobs]
+    # backend.insert_jobs(jobs)
+    # log.info(f'Added exp {exp_id}')
+    # return exp_id

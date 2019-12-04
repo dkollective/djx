@@ -1,14 +1,12 @@
-project: fit a linear model to the iris dataset
-name: try different regularisations
-source:
-  source_type: PYTHON_MODULE
-  repository: __REPO_FROM_ENTRY
-  commit: __COMMIT_FROM_ENTRY
-  entry: djx.example.src.iris.cv_fit_save
-data:
-  iris:
-    timestamp: __NOW
-    source: https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/d546eaee765268bf2f487608c537c05e22e4b221/iris.csv
+meta:
+  project: fit a linear model to the iris dataset
+  name: try different regularisations
+  source:
+    source_type: PYTHON_MODULE
+    repository: __REPO_FROM_ENTRY
+    commit: __COMMIT_FROM_ENTRY
+    entry: djx.example.src.iris.cv_fit_save
+  cluster: cpu
 job:
   labels:
     itteration: 1
@@ -29,7 +27,6 @@ job:
         - sepal_width
         - petal_length
         - petal_width
-  save: false
 experiment:
   grid:
     - parameter.cross_val_args.random_state: [0, 1, 2]

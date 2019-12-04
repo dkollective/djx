@@ -26,6 +26,11 @@ def load_yaml(file_name):
         return yaml.load(f.read())
 
 
+def save_yaml(obj, file_name):
+    with open(file_name, 'w') as f:
+        yaml.dump(obj, f)
+
+
 def get_commit(entry):
     func = get_method(entry)
     folder = os.path.dirname(get_file(func))

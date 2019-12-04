@@ -1,19 +1,29 @@
 """
 Usage:
     djx add <exp-file>
-    djx run <exp-id>
-    djx add-run <exp-file>
+    djx run <job-file>
 """
-import logging
+# import logging
 import djx
 from docopt import docopt
 from djx.exp import add_exp
 # from djx.job import run_next
 
+# log = logging.getLogger(djx.__name__)
+
+# log.setLevel(logging.DEBUG)
+# if not log.handlers:
+#     ch = logging.StreamHandler()
+#     log.addHandler(ch)
+
 
 def main():
     args = docopt(__doc__)
-    add_exp(args['<exp-file>'])
+    if args.get('add'):
+        add_exp(args['<exp-file>'])
+
+    elif args.get('run'):
+        run_exp(args['<job-file>'])
 
 
 

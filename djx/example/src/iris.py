@@ -1,6 +1,6 @@
 import pandas as pd
 import joblib
-import djx.record
+# import djx.record
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
 

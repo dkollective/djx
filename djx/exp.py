@@ -4,7 +4,6 @@ import os
 from djx.utils import load_yaml, get_commit, get_repro, save_yaml
 # from djx.backend import psql as backend
 from djx.grid import parse_grid
-# from djx.data import get_all_data
 from toolz import get_in
 import uuid
 import subprocess
@@ -18,11 +17,6 @@ LOG_FOLDER = os.environ['DJX_LOG_FOLDER']
 
 def get_uuid():
     return str(uuid.uuid4())
-
-# def store_job(job, job_id):
-#     path = os.path.join(JOB_FOLDER, job_id + '.yml')
-#     save_yaml(job, path)
-#     return path
 
 def queue_job(job):
     job_id = job['job_id']

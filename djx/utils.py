@@ -6,6 +6,11 @@ import os
 import socket
 
 
+def ensure_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
 def get_method(name):
     splitted = name.split('.')
     module_name = '.'.join(splitted[:-1])

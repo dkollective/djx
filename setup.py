@@ -9,7 +9,7 @@ setup(
         'toolz==0.9.0',
         'pandas==0.23.3',
         'docopt==0.6.2',
-        'structlog==19.1.0',
+        'structlog==19.2.0',
         'joblib==0.13.2',
         'mlflow'
     ],

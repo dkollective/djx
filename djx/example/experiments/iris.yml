@@ -37,11 +37,11 @@ experiment:
           min_samples_split: 10
           min_samples_leaf: 1
         labels.min_samples: 'many_split_only'
-      - parameter.model_args:
-          min_samples_split: 10
-          min_samples_leaf: 5
-        labels.min_samples: 'few_both'
-      - parameter.model_args:
-          min_samples_split: 40
-          min_samples_leaf: 20
-        labels.min_samples: 'many_both'
+      # - parameter.model_args:
+      #     min_samples_split: 10
+      #     min_samples_leaf: 5
+      #   labels.min_samples: 'few_both'
+      # - parameter.model_args:
+      #     min_samples_split: 40
+      #     min_samples_leaf: 20
+      #   labels.min_samples: 'many_both'

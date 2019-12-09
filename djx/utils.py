@@ -15,7 +15,7 @@ def get_method(name):
     splitted = name.split('.')
     module_name = '.'.join(splitted[:-1])
     method_name = splitted[-1]
-    module = importlib.import_module(module_name, __name__)
+    module = importlib.import_module(module_name)
     func = getattr(module, method_name)
     return func
 

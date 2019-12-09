@@ -1,4 +1,5 @@
 import os
+import subprocess
 from djx.utils import get_method, get_worker_info, load_yaml, ensure_directory
 from pandas.io.json import json_normalize
 
@@ -13,6 +14,7 @@ from structlog import configure
 
 JOB_FOLDER = os.environ['DJX_JOB_FOLDER']
 REC_FOLDER = os.environ['DJX_RECORDS_FOLDER']
+
 
 def get_func_from_source(entry, source_type, **kwargs):
     if source_type == 'PYTHON_MODULE':

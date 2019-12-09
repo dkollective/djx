@@ -3,5 +3,4 @@ set -e
 
 workon djx
 
-
 exec "$@"

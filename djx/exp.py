@@ -34,6 +34,26 @@ source .venv/bin/activate
 """
 
 
+
+gpu_job_file = """
+#!/bin/bash
+#
+#SBATCH --workdir=.
+#SBATCH --cores=2
+#SBATCH --output={logpath}
+#SBATCH --job-name={job_id}
+#SBATCH --gres=gpu
+
+module load python/3.7
+
+source ~/.env
+
+source .venv/bin/activate
+
+"""
+
+
+
 def get_uuid():
     return str(uuid.uuid4())
 
@@ -47,13 +67,14 @@ def queue_job(job):
     command = job['command']
 
 
-    if job['machine'] == 'gpu':
-        command = ('sbatch --workdir .  --cores 2 -o {logpath} -J {job_id} --gres gpu cluster_gpu.sh' + command).format(
-            logpath=logpath, job_id=job_id, jobpath=jobpath)
-    elif job['machine'] == 'cpu':
+    if job['machine'] == 'cpu':
         with open('./job.pbs', 'w') as f:
             f.write((cpu_job_file + command).format(job_id=job_id, o=logpath, jobpath=jobpath))
         command = 'qsub ./job.pbs'
+    elif job['machine'] == 'gpu':
+        with open('./job.sh', 'w') as f:
+            f.write((gpu_job_file + command).format(job_id=job_id, o=logpath, jobpath=jobpath))
+        command = 'sbatch ./job.sh'
     elif job['machine'] == 'local':
         command = command.format(jobpath=jobpath)
 

@@ -26,10 +26,12 @@ def queue_job(job):
     save_yaml(job, jobpath)
     print(job)
 
-    if job['cluster'] == 'gpu':
+    if job['machine'] == 'gpu':
         command = 'sbatch --workdir .  --cores 2 -o {} -J {} --gres gpu cluster_gpu.sh djx {}'.format(logpath, job_id, job_id)
-    elif job['cluster'] == 'cpu':
+    elif job['machine'] == 'cpu':
         command = 'qsub -cwd -o {} -N {} cluster_cpu.sh djx {}'.format(logpath, job_id, job_id)
+    elif job['machine'] == 'local':
+        command = 'djx {}'.format(job_id)
 
     # subprocess.run(command, stdout=subprocess.PIPE, shell=True, check=True, text=True)
 

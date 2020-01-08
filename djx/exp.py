@@ -19,7 +19,7 @@ LOG_FOLDER = os.environ['LOG_FOLDER']
 cpu_job_file = """
 #PBS -N {job_id}
 #PBS -l walltime=10:0:0
-#PBS -l mem=10gb
+#PBS -l mem=2gb
 #PBS -j oe
 #PBS -o {o}
 #PBS -m n
@@ -113,7 +113,7 @@ def add_exp(exp_file):
     # print(exp)
     exp = preprocess_exp(exp)
     # print(exp)
-    if not exp['experiment']:
+    if not exp.get('experiment'):
        jobs = [exp['job']]
     elif 'grid' in exp['experiment']:
         jobs = parse_grid(exp['experiment']['grid'], exp['job'])

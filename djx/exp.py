@@ -18,10 +18,10 @@ LOG_FOLDER = os.environ['LOG_FOLDER']
 
 cpu_job_file = """
 #PBS -N {job_id}
-#PBS -l walltime=10:0:0
+#PBS -l walltime=4:0:0
 #PBS -l mem=2gb
 #PBS -j oe
-#PBS -o {o}
+#PBS -o {logpath}
 #PBS -m n
 #PBS -d .
 
@@ -35,8 +35,7 @@ source .venv/bin/activate
 
 
 
-gpu_job_file = """
-#!/bin/bash
+gpu_job_file = """#!/bin/bash
 #
 #SBATCH --workdir=.
 #SBATCH --cores=2
@@ -54,6 +53,22 @@ source .venv/bin/activate
 
 
 
+gpu_job_file = """#!/bin/bash
+#
+#SBATCH --workdir=.
+#SBATCH --cores=1
+#SBATCH --output={logpath}
+#SBATCH --job-name={job_id}
+
+module load python/3.7
+
+source ~/.env
+
+source .venv/bin/activate
+
+"""
+
+
 def get_uuid():
     return str(uuid.uuid4())
 
@@ -69,12 +84,12 @@ def queue_job(job):
 
     if job['machine'] == 'cpu':
         with open('./job.pbs', 'w') as f:
-            f.write((cpu_job_file + command).format(job_id=job_id, o=logpath, jobpath=jobpath))
+            f.write((cpu_job_file + command).format(job_id=job_id, logpath=logpath, jobpath=jobpath))
         command = 'qsub ./job.pbs'
     elif job['machine'] == 'gpu':
         with open('./job.sh', 'w') as f:
-            f.write((gpu_job_file + command).format(job_id=job_id, o=logpath, jobpath=jobpath))
-        command = 'sbatch ./job.sh'
+            f.write((gpu_job_file + command).format(job_id=job_id, logpath=logpath, jobpath=jobpath))
+        command = 'sbatch job.sh'
     elif job['machine'] == 'local':
         command = command.format(jobpath=jobpath)
 
@@ -114,7 +129,11 @@ def add_exp(exp_file):
     exp = preprocess_exp(exp)
     # print(exp)
     if not exp.get('experiment'):
+<<<<<<< HEAD
        jobs = [exp['job']]
+=======
+        jobs = [exp['job']]
+>>>>>>> bugfix
     elif 'grid' in exp['experiment']:
         jobs = parse_grid(exp['experiment']['grid'], exp['job'])
     # print(jobs)

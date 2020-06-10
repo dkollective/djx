@@ -129,11 +129,7 @@ def add_exp(exp_file):
     exp = preprocess_exp(exp)
     # print(exp)
     if not exp.get('experiment'):
-<<<<<<< HEAD
-       jobs = [exp['job']]
-=======
         jobs = [exp['job']]
->>>>>>> bugfix
     elif 'grid' in exp['experiment']:
         jobs = parse_grid(exp['experiment']['grid'], exp['job'])
     # print(jobs)

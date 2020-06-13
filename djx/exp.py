@@ -40,6 +40,16 @@ def ensure_dir(directory):
         os.makedirs(directory)
 
 
+starter = {
+    'cpu_dvc': 'qsub ./{}',
+    'cpu': 'qsub ./{}',
+    'gpu_dvc': 'sbatch {}',
+    'gpu': 'sbatch {}',
+    'local_dvc': 'bash {}',
+    'local': 'bash {}',
+}
+
+
 def queue_job(job, exp_dir):
     job_id = job['job_id']
     run_dir = f'{exp_dir}/{job_id}'
@@ -54,11 +64,12 @@ def queue_job(job, exp_dir):
 
     script_str = create_script(
         **job['exec'], job_id=job_id, job_file=job_file, 
-        log_file=log_file, out_path=out_path, dvc_file=dvc_file)
-    print(script_str)
+        log_file=log_file, out_path=out_path, dvc_file=dvc_file, run_dir=run_dir)
     write_file(script_str, script_file)
 
-    subprocess.run(f'bash {script_file}', stdout=subprocess.PIPE, shell=True, check=True)
+    start_command = starter[job['exec']['script_name']].format(script_file)
+    print(start_command)
+    subprocess.run(start_command, stdout=subprocess.PIPE, shell=True, check=True)
 
 
 def add_job_ids(jobs):

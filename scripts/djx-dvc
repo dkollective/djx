@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+"""
+Usage:
+    djx <exp-file>
+"""
+from docopt import docopt
+from djx.exp import add_exp
+import subprocess
+import os
+
+def listdirs(path):
+    return [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
+
+def dvc_add(run_dir):
+    command = f'cd {run_dir} && dvc add data'
+    subprocess.run(command, stdout=subprocess.PIPE, shell=True, check=True)
+
+
+def main():
+    args = docopt(__doc__)
+    exp_file = args['<exp-file>']
+    exp_dir = os.path.dirname(exp_file)
+    run_dirs = listdirs(exp_dir)
+    for run_dir in run_dirs:
+        dvc_add(os.path.join(exp_dir, run_dir))
+
+if __name__ == "__main__":
+    main()

@@ -46,13 +46,16 @@ def queue_job(job, exp_dir):
     job_file = f'{run_dir}/params.yml'
     script_file = f'{run_dir}/run.sh'
     log_file = f'{run_dir}/log.log'
+    dvc_file = f'{run_dir}/dvc.dvc'
     out_path = f'{run_dir}/data'
 
     ensure_dir(run_dir)
     save_yaml(job, job_file)
 
     script_str = create_script(
-        **job['exec'], job_id=job_id, job_file=job_file, log_file=log_file, out_path=out_path)
+        **job['exec'], job_id=job_id, job_file=job_file, 
+        log_file=log_file, out_path=out_path, dvc_file=dvc_file)
+    print(script_str)
     write_file(script_str, script_file)
 
     subprocess.run(f'bash {script_file}', stdout=subprocess.PIPE, shell=True, check=True)

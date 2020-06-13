@@ -1,1 +1,1 @@
-{command} {job_file} {out_path} > {log_file}
+python {python_file} {job_file} {out_path} > {log_file}

@@ -1,0 +1,1 @@
+{command} {job_file} {out_path} > {log_file}

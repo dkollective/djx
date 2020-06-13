@@ -33,7 +33,7 @@ def load_yaml(file_name):
 
 def save_yaml(obj, file_name):
     with open(file_name, 'w') as f:
-        yaml.dump(obj, f)
+        yaml.dump(obj, f, default_flow_style=False)
 
 
 def get_commit(entry):

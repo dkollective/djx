@@ -25,6 +25,7 @@ setup(
     },
     scripts=[
         'scripts/djx',
-        'scripts/djx-dvc'
+        'scripts/djx-dvc',
+        'scripts/merge_files'
     ]
 )

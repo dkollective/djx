@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+"""
+Usage:
+    merge_files <exp-file>
+"""
+from docopt import docopt
+import os
+import pandas as pd
+import multiprocessing
+
+
+N_JOBS = 16
+
+
+def read_file(filename):
+    return pd.read_parquet(filename)
+
+
+def find_files_with_extension(_dir, ext):
+    for root, dirs, files in os.walk(_dir):
+        for file in files:
+            if file.endswith(ext):
+                yield os.path.join(root, file)
+
+
+def merge_files(exp_dir, output_file):
+    files_g = find_files_with_extension(exp_dir, ".parquet")
+    pool = multiprocessing.Pool(N_JOBS)
+    dfs = pool.map(read_file, files_g)
+    df = pd.concat(dfs)
+    df.to_parquet(output_file)
+
+
+def main():
+    args = docopt(__doc__)
+    exp_file = args['<exp-file>']
+    exp_dir = os.path.dirname(exp_file)
+    output_file = os.path.join(exp_dir, 'metrics.parquet')
+    merge_files(exp_dir, output_file)
+
+
+if __name__ == "__main__":
+    main()
+

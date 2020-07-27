@@ -41,8 +41,14 @@ def ensure_dir(directory):
 
 
 starter = {
+<<<<<<< HEAD
     'cpu_dvc': 'sbatch ./{}',
     'cpu': 'sbatch ./{}',
+=======
+    'cpu_dvc': 'qsub ./{}',
+    'cpu': 'qsub ./{}',
+    'cpu_slurm': 'sbatch {}',
+>>>>>>> Add cpu slurm.
     'gpu_dvc': 'sbatch {}',
     'gpu': 'sbatch {}',
     'local_dvc': 'bash {}',
@@ -82,7 +88,7 @@ def add_job_ids(jobs):
 
 def add_exp(exp_file):
     exp = load_yaml(exp_file)
-    exp_dir = os.path.dirname(exp_file)
+    exp_dir = os.path.join(os.path.dirname(exp_file), 'grid')
 
     if 'grid' in exp:
         base_job = omit(['grid'], exp)

@@ -1,10 +1,9 @@
-#PBS -N {job_id}
-#PBS -l walltime=4:0:0
-#PBS -l mem=2gb
-#PBS -j oe
-#PBS -o {log_file}
-#PBS -m n
-#PBS -d .
+#!/bin/bash
+#
+#SBATCH --workdir=.
+#SBATCH --cores=1
+#SBATCH --output={log_file}
+#SBATCH --job-name={job_id}
 
 module load python/3.7
 

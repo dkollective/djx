@@ -8,36 +8,52 @@ from docopt import docopt
 import os
 import pandas as pd
 import multiprocessing
+import itertools
 
 
 N_JOBS = 16
 
 
-def read_file(filename):
-    return pd.read_parquet(filename)
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+def read_file(args):
+    filename, fullfilename = args
+    return (filename, pd.read_parquet(fullfilename))
 
 
 def find_files_with_extension(_dir, ext):
     for root, dirs, files in os.walk(_dir):
         for file in files:
             if file.endswith(ext):
-                yield os.path.join(root, file)
+                yield (file, os.path.join(root, file))
 
 
-def merge_files(exp_dir, output_file):
+def merge_files(exp_dir, output_dir):
     files_g = find_files_with_extension(exp_dir, ".parquet")
     pool = multiprocessing.Pool(N_JOBS)
     dfs = pool.map(read_file, files_g)
-    df = pd.concat(dfs)
-    df.to_parquet(output_file)
+    d = {}
+    for filename, dfss in dfs:
+        if filename in d:
+            d[filename].append(dfss)
+        else:
+            d[filename] = [dfss]
+    for filename, dfss in d.items():
+        output_file = os.path.join(output_dir, filename)
+        df = pd.concat(dfss)
+        df.to_parquet(output_file)
 
 
 def main():
     args = docopt(__doc__)
     exp_file = args['<exp-file>']
     exp_dir = os.path.dirname(exp_file)
-    output_file = os.path.join(exp_dir, 'metrics.parquet')
-    merge_files(exp_dir, output_file)
+    output_dir = os.path.join(exp_dir, 'agg')
+    ensure_dir(output_dir)
+    merge_files(exp_dir, output_dir)
 
 
 if __name__ == "__main__":

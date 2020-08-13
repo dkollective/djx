@@ -48,13 +48,14 @@ starter = {
     'gpu': 'sbatch {}',
     'local_dvc': 'bash {}',
     'local': 'bash {}',
+    'local_parallel': 'bash {}',
 }
 
 
 def queue_job(job, exp_dir):
     job_id = job['job_id']
     run_dir = f'{exp_dir}/{job_id}'
-    job_file = f'{run_dir}/params.yml'
+    job_file = f'{run_dir}/{job["exec"]["command"]}.yml'
     script_file = f'{run_dir}/run.sh'
     log_file = f'{run_dir}/log.log'
     dvc_file = f'{run_dir}/dvc.dvc'

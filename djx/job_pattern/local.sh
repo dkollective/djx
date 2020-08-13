@@ -1,1 +1,1 @@
-python {python_file} {job_file} {out_path} > {log_file}
+{command} {run_dir} > {log_file}

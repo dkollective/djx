@@ -2,7 +2,7 @@
 
 """
 Usage:
-    merge_files <exp-file>
+    djx-map <command> <dir>
 """
 from docopt import docopt
 import os
@@ -14,14 +14,12 @@ import itertools
 N_JOBS = 16
 
 
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
-def read_file(args):
-    filename, fullfilename = args
-    return (filename, pd.read_parquet(fullfilename))
+def get_subdirs(_dir):
+    return [
+        os.path.join(d, o)
+        for o in os.listdir(_dir) 
+        if os.path.isdir(os.path.join(d,o))
+    ]
 
 
 def find_files_with_extension(_dir, ext):

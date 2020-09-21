@@ -46,6 +46,7 @@ starter = {
     'cpu_slurm': 'sbatch {}',
     'gpu_dvc': 'sbatch {}',
     'gpu': 'sbatch {}',
+    'cpu8': 'sbatch {}',
     'local_dvc': 'bash {}',
     'local': 'bash {}',
     'local_parallel': 'bash {}',

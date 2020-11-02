@@ -1,10 +1,12 @@
-#PBS -N {job_id}
-#PBS -l walltime=8:0:0
-#PBS -l mem=4gb
-#PBS -j oe
-#PBS -o {log_file}
-#PBS -m n
-#PBS -d .
+#!/bin/bash
+#
+#SBATCH --workdir=.
+#SBATCH --cores={cores}
+#SBATCH --time {hours}:0:0
+#SBATCH --mem {memory}GB
+#SBATCH --output={log_file}
+#SBATCH --job-name={job_id}
+#!/bin/bash
 
 module load python/3.7
 
@@ -12,4 +14,4 @@ source .venv/bin/activate
 
 echo "Entered environment"
 
-{command} {run_dir}
+{command} {run_dir} {in_dir}

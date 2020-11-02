@@ -59,7 +59,7 @@ def parse_dim(jobs, grid_dim):
 
 
 def parse_grid(grid, base_job):
-    dummy = {'labels': {}, 'parameter': {}}
+    dummy = {'labels': {}, 'params': {}}
     jobs = [{**dummy, **base_job}]
     for grid_dim in grid:
         jobs = parse_dim(jobs, grid_dim)

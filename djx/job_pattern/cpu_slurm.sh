@@ -11,4 +11,4 @@ source .venv/bin/activate
 
 echo "Entered environment"
 
-python {python_file} {job_file} {out_path} 
+{command} {run_dir} {in_dir}

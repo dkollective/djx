@@ -16,4 +16,4 @@ source .venv/bin/activate
 
 echo "Entered environment"
 
-{command} {run_dir}
+{command} {run_dir} {in_dir}

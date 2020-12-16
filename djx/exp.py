@@ -42,14 +42,11 @@ def ensure_dir(directory):
 
 
 starter = {
-    'cpu_dvc': 'qsub ./{}',
-    'cpu': 'sbatch ./{}',
-    'cpu_slurm': 'sbatch {}',
-    'gpu_dvc': 'sbatch {}',
+    'cpu': 'sbatch {}',
+    'cpu_torque': 'qsub {}',
     'gpu': 'sbatch {}',
     'cpu8': 'sbatch {}',
     'cpu1': 'sbatch {}',
-    'local_dvc': 'bash {}',
     'local': 'bash {}',
     'local_parallel': 'bash {}',
 }

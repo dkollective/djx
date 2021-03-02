@@ -3,9 +3,11 @@ import logging
 import os
 from djx.utils import load_yaml, get_commit, get_repro, save_yaml
 from djx.grid import parse_grid
+from djx.merge import deepermerge
 from toolz import keyfilter
 import uuid
 import subprocess
+
 
 log = logging.getLogger(__name__)
 
@@ -13,15 +15,19 @@ log = logging.getLogger(__name__)
 def pick(whitelist, d):
     return keyfilter(lambda k: k in whitelist, d)
 
+
 def omit(blacklist, d):
     return keyfilter(lambda k: k not in blacklist, d)
+
 
 def get_uuid():
     return str(uuid.uuid4())
 
+
 def read_file(filename):
     with open(filename, 'r') as f:
         return f.read()
+
 
 def write_file(string, filename):
     with open(filename, 'w') as f:
@@ -87,7 +93,7 @@ def get_subdirs(_dir):
     return [
         o
         for o in os.listdir(_dir)
-        if os.path.isdir(os.path.join(_dir,o))
+        if os.path.isdir(os.path.join(_dir, o))
     ]
 
 
@@ -102,9 +108,19 @@ def parse_parent(base_job, strategy, folder_name, base_dir, parent_name):
         yield {**base_job, 'labels': labels, 'exec': _exec}
 
 
+def include_files(exp):
+    if 'include' in exp:
+        include = exp.pop('include')
+        for inc in include:
+            new = load_yaml(inc)
+            exp = deepermerge(exp, new)
+    return exp
+
+
 def add_exp(exp_name, base_dir):
     exp_file = os.path.join(base_dir, f'{exp_name}.yml')
     exp = load_yaml(exp_file)
+    exp = include_files(exp)
     exp_dir = os.path.join(base_dir, exp_name)
 
     if 'grid' in exp:

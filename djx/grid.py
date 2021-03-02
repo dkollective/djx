@@ -1,16 +1,5 @@
 from toolz import get_in, assoc_in
-
-
-def deepmerge(base, new):
-    if isinstance(base, dict) and isinstance(new, dict):
-        return {**base, **new}
-    elif isinstance(base, list) and isinstance(new, list):
-        if len(base) == len(new):
-            return [deepmerge(b, n) for b, n in zip(base, new)]
-        else:
-            ValueError('Length of list in deepmerge do not match.')
-    else:
-        return new
+from djx.merge import deepmerge
 
 
 def parse_simple(jobs, grid_dim):

@@ -24,8 +24,6 @@ setup(
             'seaborn']
     },
     scripts=[
-        'scripts/djx',
-        'scripts/djx-dvc',
-        'scripts/merge_files'
+        'scripts/djx'
     ]
 )

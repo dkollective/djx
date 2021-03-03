@@ -130,7 +130,7 @@ def add_exp(exp_name, base_dir):
         base_job = omit(['parent'], exp)
         jobs = parse_parent(base_job=base_job, base_dir=base_dir, **exp['parent'])
     else:
-        jobs = [exp['job']]
+        jobs = [exp]
 
     exp_id = get_uuid()
     jobs = [{**t, 'exp_id': exp_id} for t in add_job_ids(jobs)]

@@ -8,6 +8,7 @@
 #PBS -d .
 
 module load python/3.7
+module load cuda
 
 source .venv/bin/activate
 

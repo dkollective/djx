@@ -6,6 +6,7 @@
 #SBATCH --mem {memory}GB
 #SBATCH --output={log_file}
 #SBATCH --job-name={job_id}
+#SBATCH --partition {partition}
 #!/bin/bash
 
 module load python/3.7

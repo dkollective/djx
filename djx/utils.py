@@ -26,14 +26,15 @@ def get_file(func):
     return module.__file__
 
 
-def load_yaml(file_name):
-    with open(file_name, 'r') as f:
-        return yaml.load(f.read())
+def save_yaml(obj, filename):
+    with open(filename, 'w') as f:
+        yaml.dump(obj, f)
 
 
-def save_yaml(obj, file_name):
-    with open(file_name, 'w') as f:
-        yaml.dump(obj, f, default_flow_style=False)
+def load_yaml(filename):
+    with open(filename) as f:
+        data = yaml.safe_load(f)
+    return data
 
 
 def get_commit(entry):

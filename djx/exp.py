@@ -1,7 +1,7 @@
 import datetime
 import logging
 import os
-from djx.utils import load_yaml, get_commit, get_repro, save_yaml
+from djx.utils import load_yaml, get_commit, get_repro, save_yaml, ensure_directory
 from djx.grid import parse_grid
 from djx.merge import deepermerge
 from toolz import keyfilter
@@ -34,10 +34,11 @@ def write_file(string, filename):
         f.write(string)
 
 
-def create_script(script_name, **kwargs):
+def create_script(script_name, command, **kwargs):
     script_file = os.path.join(os.path.dirname(__file__), f'job_pattern/{script_name}.sh')
     script_str = read_file(script_file)
-    kwargs = {'in_dir': '', **kwargs}
+    command = command.format(**kwargs)
+    kwargs = {'in_dir': '', **kwargs, 'command': command}
     script_str = script_str.format(**kwargs)
     return script_str
 
@@ -49,10 +50,7 @@ def ensure_dir(directory):
 
 starter = {
     'cpu': 'sbatch {}',
-    'cpu_torque': 'qsub {}',
     'gpu': 'sbatch {}',
-    'cpu8': 'sbatch {}',
-    'cpu1': 'sbatch {}',
     'local': 'bash {}',
     'local_parallel': 'bash {}',
 }
@@ -61,30 +59,39 @@ starter = {
 def queue_job(job, exp_dir):
     job_id = job['job_id']
     run_dir = f'{exp_dir}/{job_id}'
-    job_file = f'{run_dir}/{job["exec"]["command"]}.yml'
+    job_file = f'{run_dir}/job.yml'
     script_file = f'{run_dir}/run.sh'
     log_file = f'{run_dir}/log.log'
-    dvc_file = f'{run_dir}/dvc.dvc'
-    out_path = f'{run_dir}/data'
+    output_path = f'{run_dir}'
+    script_name = job['exec']['script_name']
+    job_only = job['exec'].get('job_only', False)
+
+    script_str = create_script(
+        **job['exec'], job_id=job_id, job_file=job_file,
+        log_file=log_file, output_path=output_path, run_dir=run_dir)
+
+    if job.get('params_only'):
+        job = job['params']
+
+    if 'output_path' not in job:
+        job['output_path'] = os.path.join(os.getcwd(), output_path)
 
     ensure_dir(run_dir)
     save_yaml(job, job_file)
 
-    script_str = create_script(
-        **job['exec'], job_id=job_id, job_file=job_file,
-        log_file=log_file, out_path=out_path, dvc_file=dvc_file, run_dir=run_dir)
     write_file(script_str, script_file)
 
-    start_command = starter[job['exec']['script_name']].format(script_file)
-    print(start_command)
-    subprocess.run(start_command, stdout=subprocess.PIPE, shell=True, check=True)
+    if not job_only:
+        start_command = starter[script_name].format(script_file)
+        print(start_command)
+        subprocess.run(start_command, stdout=subprocess.PIPE, shell=True, check=True)
 
 
 def add_job_ids(jobs):
     ids = set()
     for idx, job in enumerate(jobs):
-        job_id = "__".join(f"{k}_{v}" for k, v in job['labels'].items())
-        # job_id = f"#{idx}#{job_id}"
+        labels = job.get('labels', job['params'].get('labels', {}))
+        job_id = "__".join(f"{k}_{v}" for k, v in labels.items())
         ids.add(job_id)
         yield {**job, 'job_id': job_id}
 
@@ -117,16 +124,16 @@ def include_files(exp):
     return exp
 
 
-def add_exp(exp_name, base_dir):
-    exp_file = os.path.join(base_dir, f'{exp_name}.yml')
+def add_exp(exp_file):
     exp = load_yaml(exp_file)
     exp = include_files(exp)
-    exp_dir = os.path.join(base_dir, exp_name)
+    exp_dir = os.path.splitext(exp_file)[0]
 
     if 'grid' in exp:
         base_job = omit(['grid'], exp)
         jobs = parse_grid(exp['grid'], base_job)
     elif 'parent' in exp:
+        raise NotImplementedError('Currently not implemented')
         base_job = omit(['parent'], exp)
         jobs = parse_parent(base_job=base_job, base_dir=base_dir, **exp['parent'])
     else:

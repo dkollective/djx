@@ -1,6 +1,6 @@
 """
 Usage:
-    djx <exp-name> <base-dir>
+    djx <exp-file>
 """
 import djx
 from docopt import docopt
@@ -9,7 +9,7 @@ from djx.exp import add_exp
 
 def main():
     args = docopt(__doc__)
-    add_exp(args['<exp-name>'], args['<base-dir>'])
+    add_exp(args['<exp-file>'])
 
 
 if __name__ == "__main__":

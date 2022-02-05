@@ -1,1 +1,1 @@
-{command} {run_dir} {in_dir} > {log_file} &
+{command} > {log_file} &

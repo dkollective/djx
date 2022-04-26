@@ -9,7 +9,7 @@
 #SBATCH --partition {partition}
 #!/bin/bash
 
-module load python/3.7
+module load python/3.9
 
 source .venv/bin/activate
 

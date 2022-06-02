@@ -53,6 +53,7 @@ starter = {
     'gpu': 'sbatch {}',
     'local': 'bash {}',
     'local_parallel': 'bash {}',
+    'test': 'bash {}',
 }
 
 

@@ -8,7 +8,10 @@ def assoc_in(obj, keys, value):
         if isinstance(obj, list):
             if key == 'x':
                 assert len(keys) == 1, 'Found appending ".x." in the middle of key.'
-                return obj + [assoc_in(None, keys[1:], value)]
+                if value is None:
+                    return obj
+                else:
+                    return obj + [assoc_in(None, keys[1:], value)]
             else:
                 idx = int(key)
                 return obj[:idx] + [assoc_in(obj[idx], keys[1:], value)] + obj[idx+1:]

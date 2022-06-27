@@ -1,9 +1,10 @@
 #!/bin/bash -l
 #
 #SBATCH --workdir=.
-#SBATCH --cores=2
 #SBATCH --output={log_file}
 #SBATCH --job-name={job_id}
+#SBATCH --cpus-per-task {cores}
+#SBATCH --mem {memory}GB
 #SBATCH --gres=gpu
 #SBATCH --partition gpu
 

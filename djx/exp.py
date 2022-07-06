@@ -1,7 +1,7 @@
-import datetime
+from time import sleep
 import logging
 import os
-from djx.utils import load_yaml, get_commit, get_repro, save_yaml, ensure_directory
+from djx.utils import load_yaml, save_yaml
 from djx.grid import parse_grid
 from djx.merge import deepermerge
 from toolz import keyfilter
@@ -85,6 +85,7 @@ def queue_job(job, exp_dir):
     if not job_only:
         start_command = starter[script_name].format(script_file)
         print(start_command)
+        sleep(1)
         subprocess.run(start_command, stdout=subprocess.PIPE, shell=True, check=True)
 
 

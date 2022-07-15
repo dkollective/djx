@@ -77,6 +77,8 @@ def queue_job(job, exp_dir):
     if 'output_path' not in job:
         job['output_path'] = os.path.join(os.getcwd(), output_path)
 
+    job['job_id'] = job_id
+
     ensure_dir(run_dir)
     save_yaml(job, job_file)
 

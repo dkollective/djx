@@ -1,3 +1,4 @@
+from tempfile import tempdir
 from time import sleep
 import logging
 import os
@@ -57,9 +58,12 @@ starter = {
 }
 
 
-def queue_job(job, exp_dir):
+def queue_job(job):
     job_id = job['job_id']
-    run_dir = f'{exp_dir}/{job_id}'
+    temp_dir = job['temp_dir']
+    data_dir = job['data_dir']
+
+    run_dir = f'{temp_dir}/{job_id}'
     job_file = f'{run_dir}/job.yml'
     script_file = f'{run_dir}/run.sh'
     log_file = f'{run_dir}/log.log'
@@ -76,6 +80,10 @@ def queue_job(job, exp_dir):
 
     if 'output_path' not in job:
         job['output_path'] = os.path.join(os.getcwd(), output_path)
+    job['job_id'] = job_id
+    job['temp_dir'] = os.path.join(os.getcwd(), temp_dir)
+    job['data_dir'] = os.path.join(os.getcwd(), data_dir)
+
 
     ensure_dir(run_dir)
     save_yaml(job, job_file)
@@ -129,7 +137,12 @@ def include_files(exp):
 def add_exp(exp_file):
     exp = load_yaml(exp_file)
     exp = include_files(exp)
+    exp_name = os.path.basename(exp_file)
     exp_dir = os.path.splitext(exp_file)[0]
+    exp_dir = os.path.normpath(exp_dir)
+    exp_dir = exp_dir.split(os.sep)
+    temp_dir = os.path.join(exp['exec']['temp_dir'], *exp_dir[1:])
+    data_dir = os.path.join(exp['exec']['data_dir'], *exp_dir[1:])
 
     if 'grid' in exp:
         base_job = omit(['grid'], exp)
@@ -142,7 +155,10 @@ def add_exp(exp_file):
         jobs = [exp]
 
     exp_id = get_uuid()
-    jobs = [{**t, 'exp_id': exp_id} for t in add_job_ids(jobs)]
+    jobs = [
+        {**t, 'exp_id': exp_id, 'temp_dir': temp_dir, 'data_dir': data_dir, 'exp_name': exp_name}
+        for t in add_job_ids(jobs)
+    ]
 
     for j in jobs:
-        queue_job(j, exp_dir)
+        queue_job(j)

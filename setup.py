@@ -9,15 +9,13 @@ setup(
     ],
     extras_require={
         'example': [
-            'ipdb',
-            'jupyter',
-            'jupyter-client',
-            'jupyter-console',
-            'ipython',
-            'scikit-learn',
-            'pylint',
-            'flake8',
-            'matplotlib',
-            'seaborn']
+            'pydantic',
+            'pandas',
+            'scikit-learn']
+    },
+    entry_points={
+        'console_scripts': [
+            'djx=djx.djx:main',
+        ],
     },
 )

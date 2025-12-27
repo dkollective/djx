@@ -1,10 +1,10 @@
 define:
-  config_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/config.yml
-  script_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/run.sh
-  log_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/log.log
+  config_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/<<job_uid>>/config.yml
+  script_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/<<job_uid>>/run.sh
+  log_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/<<job_uid>>/log.log
 script_template: |
-  python -m djx.example.src.iris.cv_fit_save <<config_file>> > <<log_file>>
-command: bash
+  python <<config_file>> > <<log_file>>
+command: bash <<script_file>>
 meta:
   project_id: iris_test
   name: try_min_samples_split
@@ -28,7 +28,8 @@ config:
       - petal_length
       - petal_width
     save: false
-experiment:
+  output_path: <<cwd>>/experiments/<<project_id>>/<<datetime>>/output.jsonl
+grid:
   - - model_args:
         min_samples_split: 10
         min_samples_leaf: 1

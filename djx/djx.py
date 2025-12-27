@@ -1,27 +1,20 @@
-from time import sleep
-import logging
-import os
-from djx.grid import parse_grid
-from djx.merge import deepermerge
-import yaml
 import argparse
+import os
+import re
+import subprocess
 import sys
 import uuid
 from datetime import datetime
-import subprocess
-import re
+from time import sleep
 
+import yaml
 
-log = logging.getLogger(__name__)
+from djx.grid import parse_grid
+from djx.merge import deepermerge
 
 
 def get_uuid():
     return str(uuid.uuid4())
-
-
-def read_file(filename):
-    with open(filename, 'r') as f:
-        return f.read()
 
 
 def write_file(string, filename):
@@ -41,6 +34,7 @@ def load_yaml(filename):
 
 
 def replace_placeholder(element, replacements=None):
+    """Replace placeholders in the format <<type:variable|default>> with values from replacements dict."""
     if replacements is None:
         replacements = {}
 
@@ -59,7 +53,6 @@ def replace_placeholder(element, replacements=None):
 
             # Convert replacement value to specified type
             if placeholder_type == "float" and replacement_value is not None:
-                # try to convert to float, if not possible, set to None
                 try:
                     replacement_value = float(replacement_value)
                 except ValueError:
@@ -94,20 +87,18 @@ def replace_placeholder(element, replacements=None):
 
     return element
 
+
 def parse_unknown_args(unknown_args, argv):
-    # Process unknown arguments to create a dictionary
+    """Parse unknown command-line arguments (--key value) into a dictionary."""
     dynamic_args = {}
     for arg in unknown_args:
         if arg.startswith("--"):
             key = arg.lstrip("-")
-            # Assuming the next item in the list is the value
             if argv.index(arg) + 1 < len(argv):
                 value = argv[argv.index(arg) + 1]
                 dynamic_args[key] = value
 
     return dynamic_args
-
-
 
 
 def ensure_dir(directory):
@@ -116,6 +107,7 @@ def ensure_dir(directory):
 
 
 def queue_job(job, dry_run=False):
+    """Generate script and config files for a job, then execute it (unless dry_run=True)."""
     script_template = job.pop('script_template')
     script_file = job.pop('script_file')
     config_file = job.pop('config_file')
@@ -135,6 +127,7 @@ def queue_job(job, dry_run=False):
 
 
 def include_files(exp):
+    """Load and merge YAML files specified in the 'include' field into the experiment config."""
     if 'include' in exp:
         include = exp.pop('include')
         for inc in include:
@@ -149,7 +142,6 @@ def main():
     )
     parser.add_argument('exp_file', type=str, help='The experiment file to run')
     parser.add_argument('--dry-run', action='store_true', help='Dry run the experiment')
-    parser.add_argument('--verbose', action='store_true', help='Verbose output')
 
     argv = sys.argv[1:]
     known_args, unknown_args = parser.parse_known_args(sys.argv[1:])
@@ -157,12 +149,11 @@ def main():
     args_dict = vars(known_args)
     args_dict.update(dynamic_args)
 
-    
     args_dict = {
         'exp_uid': get_uuid(),
         'date': datetime.now().strftime('%Y-%m-%d'),
         'datetime': datetime.now().strftime('%Y-%m-%d--%H-%M-%S'),
-        'cwd': os.path.join(os.getcwd()),
+        'cwd': os.getcwd(),
         **args_dict,
     }
 
@@ -176,7 +167,6 @@ def main():
         jobs = [{**base_job, 'config': c} for c in configs]
     else:
         jobs = [exp]
-
 
     for idx, j in enumerate(jobs):
         define = j.pop('define').copy()

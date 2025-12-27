@@ -1,4 +1,5 @@
 def deepmerge(base, new):
+    """Merge two dicts/lists shallowly, with new values taking precedence."""
     if isinstance(base, dict) and isinstance(new, dict):
         return {**base, **new}
     elif isinstance(base, list) and isinstance(new, list):
@@ -11,6 +12,7 @@ def deepmerge(base, new):
 
 
 def deepermerge(base, new):
+    """Recursively merge two dicts/lists, with new values taking precedence over base values."""
     if isinstance(base, dict) and isinstance(new, dict):
         merged = {
             k: deepermerge(b, new[k]) if k in new else b

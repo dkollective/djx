@@ -1,4 +1,5 @@
 def assoc_in(obj, keys, value):
+    """Set a nested value in a dict/list structure using a list of keys (e.g., ['model_args', 'max_depth'])."""
     if len(keys) == 0:
         return value
     else:
@@ -23,6 +24,7 @@ def assoc_in(obj, keys, value):
 
 
 def parse_simple(jobs, grid_dim):
+    """Generate jobs from a simple grid (dict format) by creating cartesian product of parameter values."""
     _jobs = []
     dim_length = get_dim_length(grid_dim.values())
     for job in jobs:
@@ -37,12 +39,14 @@ def parse_simple(jobs, grid_dim):
 
 
 def get_dim_length(ll):
+    """Get the length of grid dimension, ensuring all lists have the same length."""
     lens = [len(l) for l in ll]
     assert min(lens) == max(lens), 'Different lengths in same dimension.'
     return min(lens)
 
 
 def parse_list(jobs, grid_dim):
+    """Generate jobs from a list grid format by applying each grid combination to each job."""
     _jobs = []
     for job in jobs:
         for grid_val in grid_dim:
@@ -55,6 +59,7 @@ def parse_list(jobs, grid_dim):
 
 
 def parse_dim(jobs, grid_dim):
+    """Parse a single grid dimension (dict or list format) and generate jobs."""
     if isinstance(grid_dim, dict):
         return parse_simple(jobs, grid_dim)
     elif isinstance(grid_dim, list):
@@ -64,6 +69,7 @@ def parse_dim(jobs, grid_dim):
 
 
 def parse_grid(grid, base_job):
+    """Parse a grid specification and generate all job configurations from parameter combinations."""
     dummy = {'labels': {}}
     jobs = [{**dummy, **base_job}]
     for grid_dim in grid:

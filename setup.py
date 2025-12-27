@@ -6,9 +6,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pyyaml',
-        'toolz',
-        'docopt',
-        'joblib'
     ],
     extras_require={
         'example': [
@@ -17,13 +14,10 @@ setup(
             'jupyter-client',
             'jupyter-console',
             'ipython',
-            'sklearn',
+            'scikit-learn',
             'pylint',
             'flake8',
             'matplotlib',
             'seaborn']
     },
-    scripts=[
-        'scripts/djx'
-    ]
 )

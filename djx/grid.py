@@ -1,5 +1,3 @@
-
-
 def assoc_in(obj, keys, value):
     if len(keys) == 0:
         return value
@@ -23,24 +21,6 @@ def assoc_in(obj, keys, value):
         else:
             raise ValueError(f'Expected dict or list, got {obj}')
 
-# def get_in(keys, obj):
-#     if obj == None:
-#         return None
-#     if len(keys) == 0:
-#         return obj
-#     else:
-#         key = keys[0]
-#         if isinstance(obj, list):
-#             if key == 'x':
-#                 assert len(keys) == 1
-#                 return None
-#             else:
-#                 idx = int(key)
-#                 return get_in(keys[1:], obj[idx]) 
-#         elif isinstance(obj, dict):
-#             return get_in(keys[1:], obj.get(key))  
-#         else:
-#             return None
 
 def parse_simple(jobs, grid_dim):
     _jobs = []
@@ -69,9 +49,6 @@ def parse_list(jobs, grid_dim):
             _job = job
             for keys, value in grid_val.items():
                 k_list = keys.split('.')
-                # old_v = get_in(k_list, job)
-                # print(keys, old_v)
-                # new_v = deepmerge(old_v, value)
                 _job = assoc_in(_job, k_list, value)
             _jobs.append(_job)
     return _jobs
@@ -87,13 +64,8 @@ def parse_dim(jobs, grid_dim):
 
 
 def parse_grid(grid, base_job):
-    if base_job.get("params_only"):
-        jobs = [base_job['params']]
-    else:
-        dummy = {'labels': {}, 'params': {}}
-        jobs = [{**dummy, **base_job}]
+    dummy = {'labels': {}}
+    jobs = [{**dummy, **base_job}]
     for grid_dim in grid:
         jobs = parse_dim(jobs, grid_dim)
-    if base_job.get("params_only"):
-        jobs = [{**base_job, 'params': p} for p in jobs]
     return jobs

@@ -44,9 +44,3 @@ def fit_save(X, y, model_args):
     clf = RandomForestClassifier(**model_args)
     clf.fit(X, y)
     acc = clf.score(X, y)
-    # joblib.dump(clf, temp_path)
-    # djx.record.rec(
-    #     'fit finished',
-    #     metrics={'accuracy': acc},
-    #     context={'set': 'all'},
-    #     artifacts={'model': temp_path})

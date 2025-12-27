@@ -60,7 +60,7 @@ def parse_dim(jobs, grid_dim):
     elif isinstance(grid_dim, list):
         return parse_list(jobs, grid_dim)
     else:
-        raise ValueError("Unkown grid type.")
+        raise ValueError("Unknown grid type.")
 
 
 def parse_grid(grid, base_job):

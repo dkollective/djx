@@ -5,7 +5,7 @@ def deepmerge(base, new):
         if len(base) == len(new):
             return [deepmerge(b, n) for b, n in zip(base, new)]
         else:
-            ValueError('Length of list in deepmerge do not match.')
+            raise ValueError('Length of list in deepmerge do not match.')
     else:
         return new
 
@@ -21,6 +21,6 @@ def deepermerge(base, new):
         if len(base) == len(new):
             return [deepmerge(b, n) for b, n in zip(base, new)]
         else:
-            ValueError('Length of list in deepmerge do not match.')
+            raise ValueError('Length of list in deepmerge do not match.')
     else:
         return new

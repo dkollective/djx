@@ -9,6 +9,7 @@ import sys
 import uuid
 from datetime import datetime
 import subprocess
+import re
 
 
 log = logging.getLogger(__name__)
@@ -115,14 +116,14 @@ def ensure_dir(directory):
 
 
 def queue_job(job, dry_run=False):
-    script_str = job.pop('script_str')
+    script_template = job.pop('script_template')
     script_file = job.pop('script_file')
     config_file = job.pop('config_file')
     command = job.pop('command')
 
     script_dir = os.path.dirname(script_file)
     ensure_dir(script_dir)
-    write_file(script_str, script_file)
+    write_file(script_template, script_file)
 
     config_dir = os.path.dirname(config_file)
     ensure_dir(config_dir)
@@ -142,7 +143,7 @@ def include_files(exp):
     return exp
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
         description='DJX is a tool for running experiments',
     )
@@ -160,7 +161,7 @@ if __name__ == '__main__':
     args_dict = {
         'exp_uid': get_uuid(),
         'date': datetime.now().strftime('%Y-%m-%d'),
-        'datetime': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'datetime': datetime.now().strftime('%Y-%m-%d--%H-%M-%S'),
         'cwd': os.path.join(os.getcwd()),
         **args_dict,
     }
@@ -171,14 +172,20 @@ if __name__ == '__main__':
 
     if 'grid' in exp:
         base_job = {k: v for k, v in exp.items() if k != 'grid'}
-        jobs = parse_grid(exp['grid'], base_job)
+        configs = parse_grid(exp['grid'], base_job['config'])
+        jobs = [{**base_job, 'config': c} for c in configs]
     else:
         jobs = [exp]
 
 
-    for j in jobs:
-        define = j.pop('define')
+    for idx, j in enumerate(jobs):
+        define = j.pop('define').copy()
+        args_dict = {**args_dict, **j['meta'], 'job_uid': get_uuid(), 'job_idx': idx}
         define = replace_placeholder(define, args_dict)
-        args = {**args_dict, **define, 'job_uid': get_uuid()}
-        j = replace_placeholder(j, args)
+        args_dict = {**args_dict, **define}
+        j = replace_placeholder(j, args_dict)
         queue_job(j, dry_run=args_dict['dry_run'])
+
+
+if __name__ == '__main__':
+    main()

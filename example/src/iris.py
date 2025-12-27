@@ -30,8 +30,11 @@ def write_jsonl(filename, data: list[dict]):
 
 
 def cv_fit(config: Config):
+    print("Load dataset")
     X, y = load_dataset(**config.dataset_args)
+    print("Cross-validate")
     cross_val(X, y, config)
+    print("Done")
 
 
 def load_dataset(target_column, feature_columns):

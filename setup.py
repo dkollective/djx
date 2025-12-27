@@ -6,24 +6,16 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pyyaml',
-        'toolz',
-        'docopt',
-        'joblib'
     ],
     extras_require={
         'example': [
-            'ipdb',
-            'jupyter',
-            'jupyter-client',
-            'jupyter-console',
-            'ipython',
-            'sklearn',
-            'pylint',
-            'flake8',
-            'matplotlib',
-            'seaborn']
+            'pydantic',
+            'pandas',
+            'scikit-learn']
     },
-    scripts=[
-        'scripts/djx'
-    ]
+    entry_points={
+        'console_scripts': [
+            'djx=djx.djx:main',
+        ],
+    },
 )

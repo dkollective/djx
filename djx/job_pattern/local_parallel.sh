@@ -1,1 +1,0 @@
-{command} > {log_file} &

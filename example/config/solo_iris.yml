@@ -1,0 +1,17 @@
+cross_val_args:
+  n_splits: 3
+  shuffle: True
+  random_state: 0
+model_args:
+  n_estimators: 100
+  max_depth: 2
+  min_samples_leaf: 1
+  random_state: 0
+dataset_args:
+  target_column: species
+  feature_columns:
+    - sepal_length
+    - sepal_width
+    - petal_length
+    - petal_width
+output_path: ./experiments/default/solo_iris.jsonl

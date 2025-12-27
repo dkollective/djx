@@ -1,57 +1,121 @@
 # djx
 
-A experimental library towards a reproducible, traceable and convenient data science
-platform. This library is in a very early state, you are very welcome to contribute
-to bring it to the next level.
+A lightweight experimental framework for reproducible and traceable data science experiments.
 
-# idea
+## Overview
 
-DJX is based on three tables to organize data science experiments:
-* experiments, this is what you as researcher define
-* jobs, an experiment usually require multiple tasks to be executed
-* records, each task usually creates a (large) number of results
+djx helps you run parameterized experiments with automatic job generation, execution tracking, and result organization. Define your experiment in YAML, specify parameter grids, and djx handles the rest.
 
-Each experiment usually consists of the mulitple task. For each task, the same code is executed, however with a different set of parameters. The typical use case is a scan over hyperparameter i.e. grid search, or training the model on different subsets of the data i.e. cross-validation. Additional to the parameter a task also typically requires one or multiple datasets. Each task emits results, these results can contain artifacts, such as a trained model.
+## Key Features
 
-A experiment can be defined as a YAML. Have a look at the [example](djx/example/experiments/iris.yml).
+- **Grid Search**: Automatically generate jobs from parameter grids
+- **Placeholder System**: Dynamic values using `<<variable>>` syntax
+- **Config Includes**: Reuse configurations across experiments
+- **Job Tracking**: Unique IDs and timestamps for each experiment and job
+- **Dry Run**: Test experiment setup without execution
 
-The code you want to run takes a (possible nested) parameters as input. There are library
-method to get data, to write metrics and to store artifacts, such as a trained model.
-Have a look at the [example code](djx/example/src/iris.py).
+## Installation
 
-# enviroment
-djx runs currently on postgres. You need to provide credentials as enviroment variables.
-Additional three folders, one local temporary, one for persistant storage of datasets and
-one for persistent storage of artifacts need to be defined.
-
-```
-export DJX_PG_HOST=
-export DJX_PG_PORT=
-export DJX_PG_USER=
-export DJX_PG_PASSWORD=
-export DJX_PG_DBNAME=
-export DJX_PG_SCHEMA=
-
-export DJX_DATA_TEMP=
-export DJX_DATA_STORE=
-export DJX_ARTIFACT_STORE=
+```bash
+python3.13 -m venv .venv
+source .venv/bin/activate 
+pip install -e ".[example]"
 ```
 
-# use it
+## Quick Start
 
-### add an experiment to the system.
+1. **Create an experiment YAML** (see `example/config/iris.yml`):
+
+```yaml
+define:
+  config_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/<<job_idx>>/config.yml
+  script_file: <<cwd>>/experiments/<<project_id>>/<<datetime>>/<<job_idx>>/run.sh
+script_template: |
+  python example/src/iris.py <<config_file>> > <<log_file>>
+meta:
+  project_id: my_experiment
+config:
+  model_args:
+    n_estimators: 100
+    max_depth: 2
+grid:
+  - model_args.max_depth: [2, 3, 4]
 ```
-djx add djx/example/experiments/iris.yml
 
-```
-### run jobs from an experiment
-```
-djx run 1
+2. **Run the experiment**:
 
+```bash
+djx example/config/iris.yml
 ```
 
-# credits
+3. **Check results** in `experiments/<project_id>/<datetime>/`
 
-This library originated in discussions by Levin Brinkmann,
-Stefan Matting and Sebastian Jäger about the setup of a lightweight experimental
-framework for reproducible and traceable data science research.
+## Experiment Configuration
+
+### Basic Structure
+
+- `define`: Variables used in placeholders (e.g., file paths)
+- `script_template`: Shell script template to execute
+- `meta`: Experiment metadata (project_id, name, etc.)
+- `config`: Parameters passed to your code
+- `grid`: Parameter grid for job generation (optional)
+- `include`: Other YAML files to merge (optional)
+
+### Placeholders
+
+Use `<<variable>>` syntax for dynamic values:
+- `<<cwd>>`: Current working directory
+- `<<datetime>>`: Timestamp (YYYY-MM-DD--HH-MM-SS)
+- `<<date>>`: Date (YYYY-MM-DD)
+- `<<job_idx>>`: Job index
+- `<<job_uid>>`: Unique job ID
+- `<<exp_uid>>`: Unique experiment ID
+- Custom variables from `define` and `meta`
+
+Type conversion: `<<int:variable>>`, `<<float:variable>>`, `<<bool:variable>>`
+
+### Grid Search
+
+Two grid formats supported:
+
+**Simple grid** (cartesian product):
+```yaml
+grid:
+  - model_args.max_depth: [2, 3, 4]
+    model_args.n_estimators: [50, 100]
+```
+
+**List grid** (explicit combinations):
+```yaml
+grid:
+  - - model_args:
+        max_depth: 2
+        n_estimators: 50
+    - model_args:
+        max_depth: 3
+        n_estimators: 100
+```
+
+## Example
+
+See `example/config/iris.yml` for a complete cross-validation example with grid search over hyperparameters.
+
+## Usage
+
+```bash
+# Run experiment
+djx example/config/iris.yml
+
+# Dry run (generate files without execution)
+djx example/config/iris.yml --dry-run
+
+# Verbose output
+djx example/config/iris.yml --verbose
+
+# Pass additional variables
+djx example/config/iris.yml --custom_var value
+```
+
+## Credits
+
+This library originated in discussions by Levin Brinkmann, Stefan Matting and Sebastian Jäger about the setup of a lightweight experimental framework for reproducible and traceable data science research.

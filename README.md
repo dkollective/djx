@@ -91,8 +91,30 @@ djx supports both **YAML** (`.yml`, `.yaml`) and **JSON** (`.json`) configuratio
 ### Output Formats
 
 Configure the output format for job configs via the `config_file` path extension:
-- `.yml` or `.yaml`: YAML format (default)
-- `.json`: JSON format
+- `.yml` or `.yaml`: YAML format (default) - one file per job
+- `.json`: JSON format - one file per job
+- `.jsonl`: **JSON Lines format (batch mode)** - all job configs in one file
+
+**JSONL Batch Mode**: When using `.jsonl` extension, all job configurations are stored in a single file with one JSON object per line. This is ideal for:
+- Processing multiple experiments in one script
+- Reducing file system overhead (one directory instead of many)
+- Easier data management and portability
+
+Example batch configuration:
+```json
+{
+  "define": {
+    "config_file": "<<cwd>>/experiments/<<project_id>>/<<datetime>>/configs.jsonl"
+  },
+  "grid": [
+    {
+      "model_args.max_depth": [2, 3, 4]
+    }
+  ]
+}
+```
+
+This creates one directory with `configs.jsonl` containing all 3 job configs (one per line).
 
 ### Basic Structure
 
@@ -142,7 +164,12 @@ grid:
 
 See the example configurations:
 - `example/config/iris.yml` - YAML format with complex grid
-- `example/config/iris.json` - JSON format with simple grid
+- `example/config/iris.json` - JSON format with simple grid  
+- `example/config/iris_batch.json` - JSONL batch mode (all configs in one file)
+
+Example scripts:
+- `example/src/iris.py` - Processes single config files (YAML or JSON)
+- `example/src/iris_batch.py` - Processes JSONL batch files with multiple configs
 
 ## Usage
 

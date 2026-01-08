@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -31,6 +32,28 @@ def load_yaml(filename):
     with open(filename) as f:
         data = yaml.safe_load(f)
     return data
+
+
+def load_json(filename):
+    with open(filename) as f:
+        data = json.load(f)
+    return data
+
+
+def save_json(obj, filename):
+    with open(filename, 'w') as f:
+        json.dump(obj, f, indent=2)
+
+
+def load_config(filename):
+    """Load a config file, detecting format by extension (.yml, .yaml, or .json)."""
+    ext = os.path.splitext(filename)[1].lower()
+    if ext in ['.yml', '.yaml']:
+        return load_yaml(filename)
+    elif ext == '.json':
+        return load_json(filename)
+    else:
+        raise ValueError(f"Unsupported config file format: {ext}. Use .yml, .yaml, or .json")
 
 
 def replace_placeholder(element, replacements=None):
@@ -119,7 +142,13 @@ def queue_job(job, dry_run=False):
 
     config_dir = os.path.dirname(config_file)
     ensure_dir(config_dir)
-    save_yaml(job['config'], config_file)
+    
+    # Save config in the appropriate format based on file extension
+    ext = os.path.splitext(config_file)[1].lower()
+    if ext == '.json':
+        save_json(job['config'], config_file)
+    else:
+        save_yaml(job['config'], config_file)
 
     if not dry_run:
         sleep(1)
@@ -127,11 +156,11 @@ def queue_job(job, dry_run=False):
 
 
 def include_files(exp):
-    """Load and merge YAML files specified in the 'include' field into the experiment config."""
+    """Load and merge config files (YAML or JSON) specified in the 'include' field into the experiment config."""
     if 'include' in exp:
         include = exp.pop('include')
         for inc in include:
-            new = load_yaml(inc)
+            new = load_config(inc)
             exp = deepermerge(exp, new)
     return exp
 
@@ -158,7 +187,7 @@ def main():
     }
 
 
-    exp = load_yaml(args_dict['exp_file'])
+    exp = load_config(args_dict['exp_file'])
     exp = include_files(exp)
 
     if 'grid' in exp:

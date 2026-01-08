@@ -1,12 +1,14 @@
+import json
+import os
+import sys
+from typing import Optional
+
 import pandas as pd
 import pydantic
 import yaml
-import json
-import sys
-from typing import Optional
 from pydantic import Field
-from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import KFold
 
 
 class Config(pydantic.BaseModel):
@@ -18,8 +20,15 @@ class Config(pydantic.BaseModel):
 
     @classmethod
     def load(cls, filename):
+        """Load config from YAML or JSON file based on extension."""
+        ext = os.path.splitext(filename)[1].lower()
         with open(filename, 'r') as f:
-            data = yaml.safe_load(f)
+            if ext == '.json':
+                data = json.load(f)
+            elif ext in ['.yml', '.yaml']:
+                data = yaml.safe_load(f)
+            else:
+                raise ValueError(f"Unsupported config file format: {ext}. Use .yml, .yaml, or .json")
         return cls.model_validate(data)
 
 

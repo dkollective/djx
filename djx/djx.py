@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -31,6 +32,34 @@ def load_yaml(filename):
     with open(filename) as f:
         data = yaml.safe_load(f)
     return data
+
+
+def load_json(filename):
+    with open(filename) as f:
+        data = json.load(f)
+    return data
+
+
+def save_json(obj, filename):
+    with open(filename, 'w') as f:
+        json.dump(obj, f, indent=2)
+
+
+def save_jsonl(obj, filename):
+    """Append a single object as a JSON line to a JSONL file."""
+    with open(filename, 'a') as f:
+        f.write(json.dumps(obj) + '\n')
+
+
+def load_config(filename):
+    """Load a config file, detecting format by extension (.yml, .yaml, or .json)."""
+    ext = os.path.splitext(filename)[1].lower()
+    if ext in ['.yml', '.yaml']:
+        return load_yaml(filename)
+    elif ext == '.json':
+        return load_json(filename)
+    else:
+        raise ValueError(f"Unsupported config file format: {ext}. Use .yml, .yaml, or .json")
 
 
 def replace_placeholder(element, replacements=None):
@@ -107,7 +136,12 @@ def ensure_dir(directory):
 
 
 def queue_job(job, dry_run=False):
-    """Generate script and config files for a job, then execute it (unless dry_run=True)."""
+    """Generate script and config files for a job, then execute it (unless dry_run=True).
+    
+    Args:
+        job: Job configuration dict
+        dry_run: If True, don't execute the command
+    """
     script_template = job.pop('script_template')
     script_file = job.pop('script_file')
     config_file = job.pop('config_file')
@@ -119,7 +153,15 @@ def queue_job(job, dry_run=False):
 
     config_dir = os.path.dirname(config_file)
     ensure_dir(config_dir)
-    save_yaml(job['config'], config_file)
+    
+    # Save config in the appropriate format based on file extension
+    ext = os.path.splitext(config_file)[1].lower()
+    if ext == '.json':
+        save_json(job['config'], config_file)
+    elif ext == '.jsonl':
+        save_jsonl(job['config'], config_file)
+    else:
+        save_yaml(job['config'], config_file)
 
     if not dry_run:
         sleep(1)
@@ -127,11 +169,11 @@ def queue_job(job, dry_run=False):
 
 
 def include_files(exp):
-    """Load and merge YAML files specified in the 'include' field into the experiment config."""
+    """Load and merge config files (YAML or JSON) specified in the 'include' field into the experiment config."""
     if 'include' in exp:
         include = exp.pop('include')
         for inc in include:
-            new = load_yaml(inc)
+            new = load_config(inc)
             exp = deepermerge(exp, new)
     return exp
 
@@ -158,7 +200,7 @@ def main():
     }
 
 
-    exp = load_yaml(args_dict['exp_file'])
+    exp = load_config(args_dict['exp_file'])
     exp = include_files(exp)
 
     if 'grid' in exp:
@@ -168,12 +210,31 @@ def main():
     else:
         jobs = [exp]
 
+    # Detect JSONL batch mode: check if config_file template uses .jsonl extension
+    # In batch mode, all configs go to one .jsonl file without job_idx in path
+    first_job_define = jobs[0].get('define', {})
+    config_file_template = first_job_define.get('config_file', '')
+    jsonl_batch_mode = config_file_template.endswith('.jsonl')
+    
+    # In JSONL batch mode, clear the config file before appending
+    if jsonl_batch_mode and len(jobs) > 0:
+        # Process first job to get the actual config file path
+        test_job = jobs[0].copy()
+        test_define = test_job.pop('define').copy()
+        test_args = {**args_dict, **test_job.get('meta', {}), 'job_uid': get_uuid(), 'job_idx': 0}
+        test_define = replace_placeholder(test_define, test_args)
+        jsonl_file = test_define.get('config_file', '')
+        
+        # Clear the JSONL file if it exists
+        if os.path.exists(jsonl_file):
+            os.remove(jsonl_file)
+
     for idx, j in enumerate(jobs):
         define = j.pop('define').copy()
-        args_dict = {**args_dict, **j['meta'], 'job_uid': get_uuid(), 'job_idx': idx}
-        define = replace_placeholder(define, args_dict)
-        args_dict = {**args_dict, **define}
-        j = replace_placeholder(j, args_dict)
+        args_dict_job = {**args_dict, **j['meta'], 'job_uid': get_uuid(), 'job_idx': idx}
+        define = replace_placeholder(define, args_dict_job)
+        args_dict_job = {**args_dict_job, **define}
+        j = replace_placeholder(j, args_dict_job)
         queue_job(j, dry_run=args_dict['dry_run'])
 
 

@@ -11,7 +11,9 @@ setup(
         'example': [
             'pydantic',
             'pandas',
-            'scikit-learn']
+            'scikit-learn'],
+        'dev': [
+            'pytest>=7.0.0']
     },
     entry_points={
         'console_scripts': [

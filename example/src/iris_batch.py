@@ -31,6 +31,17 @@ class Config(pydantic.BaseModel):
                 raise ValueError(f"Unsupported config file format: {ext}. Use .yml, .yaml, or .json")
         return cls.model_validate(data)
 
+    @classmethod
+    def load_batch_jsonl(cls, filename):
+        """Load multiple configs from a JSONL file."""
+        configs = []
+        with open(filename, 'r') as f:
+            for line in f:
+                if line.strip():
+                    data = json.loads(line)
+                    configs.append(cls.model_validate(data))
+        return configs
+
 
 def write_jsonl(filename, data: list[dict]):
     with open(filename, 'a') as f:
@@ -39,6 +50,7 @@ def write_jsonl(filename, data: list[dict]):
 
 
 def cv_fit(config: Config):
+    print(f"Processing config with labels: {config.labels}")
     print("Load dataset")
     X, y = load_dataset(**config.dataset_args)
     print("Cross-validate")
@@ -90,5 +102,18 @@ def cross_val(X, y, config: Config):
 
 if __name__ == '__main__':
     config_file = sys.argv[1]
-    config = Config.load(config_file)
-    cv_fit(config)
+    
+    # Check if it's a JSONL file with multiple configs
+    if config_file.endswith('.jsonl'):
+        print(f"Batch mode: processing multiple configs from {config_file}")
+        configs = Config.load_batch_jsonl(config_file)
+        print(f"Found {len(configs)} configurations")
+        for idx, config in enumerate(configs):
+            print(f"\n{'='*60}")
+            print(f"Running job {idx + 1}/{len(configs)}")
+            print(f"{'='*60}")
+            cv_fit(config)
+    else:
+        print(f"Single mode: processing config from {config_file}")
+        config = Config.load(config_file)
+        cv_fit(config)

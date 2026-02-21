@@ -1,0 +1,50 @@
+{
+  "define": {
+    "config_file": "<<cwd>>/experiments/<<project_id>>/<<datetime>>/configs.jsonl",
+    "script_file": "<<cwd>>/experiments/<<project_id>>/<<datetime>>/run.sh",
+    "log_file": "<<cwd>>/experiments/<<project_id>>/<<datetime>>/log.log"
+  },
+  "script_template": "python example/src/iris_batch.py <<config_file>> > <<log_file>>\n",
+  "config_file": "<<config_file>>",
+  "script_file": "<<script_file>>",
+  "command": "bash <<script_file>>",
+  "meta": {
+    "project_id": "iris_batch_test",
+    "name": "batch_jsonl_experiment"
+  },
+  "config": {
+    "labels": {
+      "experiment": "batch_mode"
+    },
+    "cross_val_args": {
+      "n_splits": 3,
+      "shuffle": true,
+      "random_state": 0
+    },
+    "model_args": {
+      "n_estimators": 100,
+      "max_depth": 2,
+      "random_state": 0
+    },
+    "dataset_args": {
+      "target_column": "species",
+      "feature_columns": [
+        "sepal_length",
+        "sepal_width",
+        "petal_length",
+        "petal_width"
+      ]
+    },
+    "output_path": "<<cwd>>/experiments/<<project_id>>/<<datetime>>/output.jsonl"
+  },
+  "grid": [
+    {
+      "model_args.max_depth": [2, 3, 4],
+      "labels.max_depth": [2, 3, 4]
+    },
+    {
+      "model_args.n_estimators": [50, 100],
+      "labels.n_estimators": [50, 100]
+    }
+  ]
+}
